@@ -1,8 +1,8 @@
 version: '3.8'
 
 services:
-  postgres:
-    container_name: rec_svc_postgres
+  rec_db:
+    container_name: rec_db
     image: postgres:16.0
     env_file:
      - .env
@@ -11,11 +11,26 @@ services:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       PGDATA: /data/rec_svc_postgres
-      POSTGRES_HOST_AUTH_METHOD: trust
     volumes:
-      - postgres-db:/var/lib/postgresql/data
+      - rec-db:/var/lib/postgresql/data
     ports:
       - "5436:5432"
 
+  course_db:
+    container_name: course_db
+    image: postgres:16.0
+    env_file:
+     - .env
+    environment:
+      POSTGRES_DB : course_db
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      PGDATA: /data/course_svc_postgres
+    volumes:
+      - course-db:/var/lib/postgresql/data
+    ports:
+      - "5437:5432"
+
 volumes:
-  postgres-db:
+  rec-db:
+  course-db:

@@ -158,9 +158,6 @@ HTTP Gateway endpoints:
       "created_at": "2023-09-12T17:34:36.261285961Z",
       "updated_at": "2023-09-12T17:34:36.261285961Z",
       "body": "In this chapter we will learn...",
-      "videos": [
-        "url_1", "url_2"
-      ]
     }
     ```
   * PUT `/:id` -- replaces chapter content

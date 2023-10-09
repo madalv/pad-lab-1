@@ -6,7 +6,7 @@
 
 ### Topic
 
-The topic for the first PAD lab is a free, open source **MOOC (Massive Online Open Course) Education Platform** (alike Coursera, edX).
+The topic for the first PAD lab is a free, open source **MOOC (Massive Online Open Course) Education Platform** (alike Coursera).
 
 ### Application Suitability
 
@@ -17,7 +17,7 @@ A microservices architecture would fit the topic because of:
 * Language Agnosticism -- each microservice can be written in a language more fitting for the service's purpose. In this case, an Email Service or Gateway could be written in Elixir, for example, and some other microservices in Go.
 * Fault isolation/tolerance -- a failure in one microservice must not impact the whole application.
 
-Some projects that focus on MOOC education and employ microservices are: edX, Coursera, Udemy, Khan Academy.
+Some projects that focus on MOOC education and employ microservices are: edX, Coursera.
 
 ### Service Boundaries
 
@@ -65,56 +65,6 @@ The Auth Service will store the tokens of logged in users in a Redis Cache.
 #### Endpoints
 
 HTTP Gateway endpoints: 
-
-* User `/api/v1/users`
-  * GET `/:id` -- get a user by ID
-    * Response body:
-    ```json
-    {
-      "id": "60ba873d-721b-436e-a687-06e8c6298623",
-      "email": "some.email@gmail.com",
-      "username": "madalv",
-      "first_name":  "Vlada",
-      "last_name": "Magal",
-      "created_at": "2023-09-12T17:34:36.261285961Z",
-      "updated_at": "2023-09-12T17:34:36.261285961Z"
-    }
-    ```
-  * GET `/current` -- gets authenticated user
-    * **Requires bearer token in Authorization header**
-    * Response body: same as GET `/{id}`
-  * POST `/` -- create user
-    * Request body:
-    ```json
-    {
-      "email": "some.email@gmail.com",
-      "username": "madalv",
-      "first_name":  "Vlada",
-      "last_name": "Magal",
-      "password": "verysecretpassword123",
-    }
-    ```
-    * Response body: same as GET `/{id}`
-  * DELETE `/` -- deletes authenticated user
-    * **Requires bearer token in Authorization header**
-
-* Auth `api/v1`
-  * POST `/login` -- generates access token
-    * Request body:
-    ```json
-    {
-      "email": "some.email@gmail.com",
-      "password": "verysecretpassword123"
-    }
-    ```
-    * Response body:
-    ```json
-    {
-      "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
-    }
-    ```
-  * POST `/logout` -- invalidates access token for current user
-    * **Requires bearer token in Authorization header**
 
 * Course `/api/v1/courses`
   * GET `/` -- gets all courses

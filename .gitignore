@@ -21,3 +21,11 @@
 go.work
 
 .vscode
+
+__pycache__
+
+*.csv
+
+.env
+
+.idea

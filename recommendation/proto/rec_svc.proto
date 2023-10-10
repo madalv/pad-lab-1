@@ -8,6 +8,11 @@ service RecService {
   rpc GetRecsForCourse(CourseRecsRequest) returns (RecsResponse);
   rpc GetRecsForUser(UserRecsRequest) returns (RecsResponse);
   rpc AddCourse(Course) returns (google.protobuf.Empty);
+  rpc GetServerStatus(google.protobuf.Empty) returns (ServerStatus);
+}
+
+message ServerStatus {
+  string status = 1;
 }
 
 message CourseRecsRequest {

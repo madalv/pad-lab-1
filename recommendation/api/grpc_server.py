@@ -57,6 +57,9 @@ class RecServer(pb2_grpc.RecServiceServicer):
       context.set_code(grpc.StatusCode.INTERNAL)
       context.set_details('failed to add course')
       return None
+    
+  def GetServerStatus(self, request, context):
+    return pb2.ServerStatus(status="SERVING")
 
 def serve(rec_svc):
   # TODO read from .env

@@ -14,23 +14,25 @@ _sym_db = _symbol_database.Default()
 from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\rrec_svc.proto\x12\tproto.rec\x1a\x1bgoogle/protobuf/empty.proto\"7\n\x11\x43ourseRecsRequest\x12\x11\n\tcourse_id\x18\x01 \x01(\t\x12\x0f\n\x07recs_nr\x18\x02 \x01(\x04\"3\n\x0fUserRecsRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12\x0f\n\x07recs_nr\x18\x02 \x01(\x04\"\\\n\x06\x43ourse\x12\n\n\x02id\x18\x01 \x01(\t\x12\r\n\x05title\x18\x02 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x03 \x01(\t\x12\x12\n\ncategories\x18\x04 \x03(\t\x12\x0e\n\x06\x61uthor\x18\x05 \x01(\t\"&\n\tCourseRec\x12\n\n\x02id\x18\x01 \x01(\t\x12\r\n\x05title\x18\x02 \x01(\t\"2\n\x0cRecsResponse\x12\"\n\x04recs\x18\x01 \x03(\x0b\x32\x14.proto.rec.CourseRec2\xd6\x01\n\nRecService\x12I\n\x10GetRecsForCourse\x12\x1c.proto.rec.CourseRecsRequest\x1a\x17.proto.rec.RecsResponse\x12\x45\n\x0eGetRecsForUser\x12\x1a.proto.rec.UserRecsRequest\x1a\x17.proto.rec.RecsResponse\x12\x36\n\tAddCourse\x12\x11.proto.rec.Course\x1a\x16.google.protobuf.Emptyb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\rrec_svc.proto\x12\tproto.rec\x1a\x1bgoogle/protobuf/empty.proto\"\x1e\n\x0cServerStatus\x12\x0e\n\x06status\x18\x01 \x01(\t\"7\n\x11\x43ourseRecsRequest\x12\x11\n\tcourse_id\x18\x01 \x01(\t\x12\x0f\n\x07recs_nr\x18\x02 \x01(\x04\"3\n\x0fUserRecsRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12\x0f\n\x07recs_nr\x18\x02 \x01(\x04\"\\\n\x06\x43ourse\x12\n\n\x02id\x18\x01 \x01(\t\x12\r\n\x05title\x18\x02 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x03 \x01(\t\x12\x12\n\ncategories\x18\x04 \x03(\t\x12\x0e\n\x06\x61uthor\x18\x05 \x01(\t\"&\n\tCourseRec\x12\n\n\x02id\x18\x01 \x01(\t\x12\r\n\x05title\x18\x02 \x01(\t\"2\n\x0cRecsResponse\x12\"\n\x04recs\x18\x01 \x03(\x0b\x32\x14.proto.rec.CourseRec2\x9a\x02\n\nRecService\x12I\n\x10GetRecsForCourse\x12\x1c.proto.rec.CourseRecsRequest\x1a\x17.proto.rec.RecsResponse\x12\x45\n\x0eGetRecsForUser\x12\x1a.proto.rec.UserRecsRequest\x1a\x17.proto.rec.RecsResponse\x12\x36\n\tAddCourse\x12\x11.proto.rec.Course\x1a\x16.google.protobuf.Empty\x12\x42\n\x0fGetServerStatus\x12\x16.google.protobuf.Empty\x1a\x17.proto.rec.ServerStatusb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'rec_svc_pb2', _globals)
 if _descriptor._USE_C_DESCRIPTORS == False:
   DESCRIPTOR._options = None
-  _globals['_COURSERECSREQUEST']._serialized_start=57
-  _globals['_COURSERECSREQUEST']._serialized_end=112
-  _globals['_USERRECSREQUEST']._serialized_start=114
-  _globals['_USERRECSREQUEST']._serialized_end=165
-  _globals['_COURSE']._serialized_start=167
-  _globals['_COURSE']._serialized_end=259
-  _globals['_COURSEREC']._serialized_start=261
-  _globals['_COURSEREC']._serialized_end=299
-  _globals['_RECSRESPONSE']._serialized_start=301
-  _globals['_RECSRESPONSE']._serialized_end=351
-  _globals['_RECSERVICE']._serialized_start=354
-  _globals['_RECSERVICE']._serialized_end=568
+  _globals['_SERVERSTATUS']._serialized_start=57
+  _globals['_SERVERSTATUS']._serialized_end=87
+  _globals['_COURSERECSREQUEST']._serialized_start=89
+  _globals['_COURSERECSREQUEST']._serialized_end=144
+  _globals['_USERRECSREQUEST']._serialized_start=146
+  _globals['_USERRECSREQUEST']._serialized_end=197
+  _globals['_COURSE']._serialized_start=199
+  _globals['_COURSE']._serialized_end=291
+  _globals['_COURSEREC']._serialized_start=293
+  _globals['_COURSEREC']._serialized_end=331
+  _globals['_RECSRESPONSE']._serialized_start=333
+  _globals['_RECSRESPONSE']._serialized_end=383
+  _globals['_RECSERVICE']._serialized_start=386
+  _globals['_RECSERVICE']._serialized_end=668
 # @@protoc_insertion_point(module_scope)

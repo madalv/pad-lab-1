@@ -8,6 +8,7 @@ package pb
 
 import (
 	context "context"
+	empty "github.com/golang/protobuf/ptypes/empty"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -28,6 +29,7 @@ type CourseServiceClient interface {
 	GetChapter(ctx context.Context, in *ChapterId, opts ...grpc.CallOption) (*Chapter, error)
 	CreateChapter(ctx context.Context, in *CreateChapterRequest, opts ...grpc.CallOption) (*ChapterId, error)
 	GetCourseIdsForUser(ctx context.Context, in *UserId, opts ...grpc.CallOption) (*CourseIds, error)
+	GetServerStatus(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*ServerStatus, error)
 }
 
 type courseServiceClient struct {
@@ -92,6 +94,15 @@ func (c *courseServiceClient) GetCourseIdsForUser(ctx context.Context, in *UserI
 	return out, nil
 }
 
+func (c *courseServiceClient) GetServerStatus(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*ServerStatus, error) {
+	out := new(ServerStatus)
+	err := c.cc.Invoke(ctx, "/proto.course.CourseService/GetServerStatus", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CourseServiceServer is the server API for CourseService service.
 // All implementations must embed UnimplementedCourseServiceServer
 // for forward compatibility
@@ -102,6 +113,7 @@ type CourseServiceServer interface {
 	GetChapter(context.Context, *ChapterId) (*Chapter, error)
 	CreateChapter(context.Context, *CreateChapterRequest) (*ChapterId, error)
 	GetCourseIdsForUser(context.Context, *UserId) (*CourseIds, error)
+	GetServerStatus(context.Context, *empty.Empty) (*ServerStatus, error)
 	mustEmbedUnimplementedCourseServiceServer()
 }
 
@@ -126,6 +138,9 @@ func (UnimplementedCourseServiceServer) CreateChapter(context.Context, *CreateCh
 }
 func (UnimplementedCourseServiceServer) GetCourseIdsForUser(context.Context, *UserId) (*CourseIds, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetCourseIdsForUser not implemented")
+}
+func (UnimplementedCourseServiceServer) GetServerStatus(context.Context, *empty.Empty) (*ServerStatus, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetServerStatus not implemented")
 }
 func (UnimplementedCourseServiceServer) mustEmbedUnimplementedCourseServiceServer() {}
 
@@ -248,6 +263,24 @@ func _CourseService_GetCourseIdsForUser_Handler(srv interface{}, ctx context.Con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CourseService_GetServerStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(empty.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CourseServiceServer).GetServerStatus(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.course.CourseService/GetServerStatus",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CourseServiceServer).GetServerStatus(ctx, req.(*empty.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // CourseService_ServiceDesc is the grpc.ServiceDesc for CourseService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -278,6 +311,10 @@ var CourseService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetCourseIdsForUser",
 			Handler:    _CourseService_GetCourseIdsForUser_Handler,
+		},
+		{
+			MethodName: "GetServerStatus",
+			Handler:    _CourseService_GetServerStatus_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

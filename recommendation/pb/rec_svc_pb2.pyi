@@ -6,6 +6,12 @@ from typing import ClassVar as _ClassVar, Iterable as _Iterable, Mapping as _Map
 
 DESCRIPTOR: _descriptor.FileDescriptor
 
+class ServerStatus(_message.Message):
+    __slots__ = ["status"]
+    STATUS_FIELD_NUMBER: _ClassVar[int]
+    status: str
+    def __init__(self, status: _Optional[str] = ...) -> None: ...
+
 class CourseRecsRequest(_message.Message):
     __slots__ = ["course_id", "recs_nr"]
     COURSE_ID_FIELD_NUMBER: _ClassVar[int]

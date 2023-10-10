@@ -7,9 +7,14 @@ import (
 	"course/pb"
 	"course/util"
 
+	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/gookit/slog"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/timestamppb"
+)
+
+const (
+	STATUS_SERVING = "SERVING"
 )
 
 type courseService interface {
@@ -148,5 +153,11 @@ func (srv *grpcServer) GetCourses(_ context.Context, req *pb.PaginationQuery) (*
 
 	return &pb.Courses{
 		Courses: pbCourses,
+	}, nil
+}
+
+func (srv *grpcServer) GetServerStatus(context.Context, *empty.Empty) (*pb.ServerStatus, error) {
+	return &pb.ServerStatus{
+		Status: STATUS_SERVING,
 	}, nil
 }

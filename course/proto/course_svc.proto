@@ -3,6 +3,7 @@ syntax="proto3";
 package proto.course;
 option go_package="./pb";
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
 
 service CourseService {
   rpc GetCourses(PaginationQuery) returns (Courses);
@@ -11,6 +12,11 @@ service CourseService {
   rpc GetChapter(ChapterId) returns (Chapter);
   rpc CreateChapter(CreateChapterRequest) returns (ChapterId);
   rpc GetCourseIdsForUser(UserId) returns (CourseIds);
+  rpc GetServerStatus(google.protobuf.Empty) returns (ServerStatus);
+}
+
+message ServerStatus {
+  string status = 1;
 }
 
 message PaginationQuery {

@@ -24,6 +24,10 @@ func NewDatabase() *gorm.DB {
 	if err != nil {
 		slog.Fatal(err)
 	}
+	err = db.AutoMigrate(&model.Enrollment{})
+	if err != nil {
+		slog.Fatal(err)
+	}
 
 	return db
 }

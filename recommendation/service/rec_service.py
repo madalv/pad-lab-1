@@ -35,7 +35,15 @@ class RecService:
     """
     logging.info(f'Getting recs for user {user_id}')
     list = self.course_repo.fetch_user_courses(user_id)
-    # TODO implement
+    recs = []
+    # if the course list is bigger than the nr of recs required, get 1 rec per course
+    nr_per_course = 1 if (nr / len(list) < 1) else nr / len(list) + 1
+
+    for id in list:
+      recs.append(self.rec_sys.get_recs(id, nr_per_course))
+
+    if len(recs) > nr:
+      return recs[:nr - 1]
 
 
   def get_recs_for_course(self, course_id: str, nr: int):

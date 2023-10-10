@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+service CourseService {
+  rpc GetCourseIdsForUser(UserId) returns (CourseIds);
+}
+
+
+message CourseId {
+  string id = 1;
+}
+
+message UserId {
+  string id = 1;
+}
+
+message CourseIds {
+  repeated string ids = 1;
+}

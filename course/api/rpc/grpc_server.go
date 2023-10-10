@@ -2,7 +2,6 @@ package api
 
 import (
 	"context"
-	"time"
 
 	"course/model"
 	"course/pb"
@@ -44,8 +43,6 @@ func (srv *grpcServer) CreateChapter(context.Context, *pb.CreateChapterRequest) 
 
 // CreateCourse implements pb.CourseServiceServer.
 func (srv *grpcServer) CreateCourse(_ context.Context, req *pb.CreateCourseRequest) (*pb.CourseId, error) {
-	start := time.Now()
-	slog.Debug("Time now ", start)
 	course := model.Course{
 		Title:       req.Title,
 		Description: req.Description,
@@ -56,9 +53,6 @@ func (srv *grpcServer) CreateCourse(_ context.Context, req *pb.CreateCourseReque
 	if err != nil {
 		return nil, err
 	}
-
-	elapsed := time.Since(start)
-	slog.Printf("Req took %s", elapsed)
 
 	return &pb.CourseId{Id: id}, nil
 }

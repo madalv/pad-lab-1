@@ -1,0 +1,18 @@
+syntax="proto3";
+
+option go_package="./pb/pb_rec";
+package proto.rec;
+
+import "google/protobuf/empty.proto";
+
+service RecService {
+  rpc AddCourse(Course) returns (google.protobuf.Empty);
+}
+
+message Course {
+  string id = 1;
+  string title = 2;
+  string description = 3;
+  repeated string categories = 4;
+  string author = 5;
+}

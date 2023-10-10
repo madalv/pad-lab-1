@@ -15,15 +15,21 @@ type courseRepo interface {
 	GetCourseIDsForUser(userID string) []string
 }
 
-type CourseService struct {
-	courseRepo courseRepo
+type recRepo interface {
+	AddCourse(course model.Course) error
 }
 
-func NewCourseService(repo courseRepo) *CourseService {
+type CourseService struct {
+	courseRepo courseRepo
+	recRepo recRepo
+}
+
+func NewCourseService(cr courseRepo, rr recRepo) *CourseService {
 	slog.Info("Initializing Course Service")
 
 	return &CourseService{
-		courseRepo: repo,
+		courseRepo: cr,
+		recRepo: rr,
 	}
 }
 
@@ -50,7 +56,12 @@ func (svc *CourseService) Create(course model.Course, categoryIDs []string) (str
 	course.Categories = categories
 	if err := svc.courseRepo.Create(&course); err != nil {
 		slog.Error(err)
-		return "", nil
+		return "", err
+	}
+
+	if err := svc.recRepo.AddCourse(course); err != nil {
+		slog.Error(err)
+		return "", err
 	}
 
 	return course.ID, nil
@@ -62,6 +73,6 @@ func (svc *CourseService) GetAll(pagination util.Pagination) []model.Course {
 }
 
 func (svc *CourseService) GetCourseIDsForUser(userID string) []string {
-	slog.Info("Getting a list of course IDs for user %s", userID)
+	slog.Infof("Getting a list of course IDs for user %s", userID)
 	return svc.courseRepo.GetCourseIDsForUser(userID)
 }

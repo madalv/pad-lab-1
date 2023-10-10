@@ -1,5 +1,6 @@
 syntax="proto3";
 
+package proto.course;
 option go_package="./pb";
 import "google/protobuf/timestamp.proto";
 

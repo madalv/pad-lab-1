@@ -40,7 +40,7 @@ func NewCourseServiceClient(cc grpc.ClientConnInterface) CourseServiceClient {
 
 func (c *courseServiceClient) GetCourses(ctx context.Context, in *PaginationQuery, opts ...grpc.CallOption) (*Courses, error) {
 	out := new(Courses)
-	err := c.cc.Invoke(ctx, "/CourseService/GetCourses", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/proto.course.CourseService/GetCourses", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +49,7 @@ func (c *courseServiceClient) GetCourses(ctx context.Context, in *PaginationQuer
 
 func (c *courseServiceClient) GetCourse(ctx context.Context, in *CourseId, opts ...grpc.CallOption) (*CourseWithChapters, error) {
 	out := new(CourseWithChapters)
-	err := c.cc.Invoke(ctx, "/CourseService/GetCourse", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/proto.course.CourseService/GetCourse", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -58,7 +58,7 @@ func (c *courseServiceClient) GetCourse(ctx context.Context, in *CourseId, opts 
 
 func (c *courseServiceClient) CreateCourse(ctx context.Context, in *CreateCourseRequest, opts ...grpc.CallOption) (*CourseId, error) {
 	out := new(CourseId)
-	err := c.cc.Invoke(ctx, "/CourseService/CreateCourse", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/proto.course.CourseService/CreateCourse", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -67,7 +67,7 @@ func (c *courseServiceClient) CreateCourse(ctx context.Context, in *CreateCourse
 
 func (c *courseServiceClient) GetChapter(ctx context.Context, in *ChapterId, opts ...grpc.CallOption) (*Chapter, error) {
 	out := new(Chapter)
-	err := c.cc.Invoke(ctx, "/CourseService/GetChapter", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/proto.course.CourseService/GetChapter", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -76,7 +76,7 @@ func (c *courseServiceClient) GetChapter(ctx context.Context, in *ChapterId, opt
 
 func (c *courseServiceClient) CreateChapter(ctx context.Context, in *CreateChapterRequest, opts ...grpc.CallOption) (*ChapterId, error) {
 	out := new(ChapterId)
-	err := c.cc.Invoke(ctx, "/CourseService/CreateChapter", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/proto.course.CourseService/CreateChapter", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -85,7 +85,7 @@ func (c *courseServiceClient) CreateChapter(ctx context.Context, in *CreateChapt
 
 func (c *courseServiceClient) GetCourseIdsForUser(ctx context.Context, in *UserId, opts ...grpc.CallOption) (*CourseIds, error) {
 	out := new(CourseIds)
-	err := c.cc.Invoke(ctx, "/CourseService/GetCourseIdsForUser", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/proto.course.CourseService/GetCourseIdsForUser", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -150,7 +150,7 @@ func _CourseService_GetCourses_Handler(srv interface{}, ctx context.Context, dec
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/CourseService/GetCourses",
+		FullMethod: "/proto.course.CourseService/GetCourses",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CourseServiceServer).GetCourses(ctx, req.(*PaginationQuery))
@@ -168,7 +168,7 @@ func _CourseService_GetCourse_Handler(srv interface{}, ctx context.Context, dec 
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/CourseService/GetCourse",
+		FullMethod: "/proto.course.CourseService/GetCourse",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CourseServiceServer).GetCourse(ctx, req.(*CourseId))
@@ -186,7 +186,7 @@ func _CourseService_CreateCourse_Handler(srv interface{}, ctx context.Context, d
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/CourseService/CreateCourse",
+		FullMethod: "/proto.course.CourseService/CreateCourse",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CourseServiceServer).CreateCourse(ctx, req.(*CreateCourseRequest))
@@ -204,7 +204,7 @@ func _CourseService_GetChapter_Handler(srv interface{}, ctx context.Context, dec
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/CourseService/GetChapter",
+		FullMethod: "/proto.course.CourseService/GetChapter",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CourseServiceServer).GetChapter(ctx, req.(*ChapterId))
@@ -222,7 +222,7 @@ func _CourseService_CreateChapter_Handler(srv interface{}, ctx context.Context, 
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/CourseService/CreateChapter",
+		FullMethod: "/proto.course.CourseService/CreateChapter",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CourseServiceServer).CreateChapter(ctx, req.(*CreateChapterRequest))
@@ -240,7 +240,7 @@ func _CourseService_GetCourseIdsForUser_Handler(srv interface{}, ctx context.Con
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/CourseService/GetCourseIdsForUser",
+		FullMethod: "/proto.course.CourseService/GetCourseIdsForUser",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CourseServiceServer).GetCourseIdsForUser(ctx, req.(*UserId))
@@ -252,7 +252,7 @@ func _CourseService_GetCourseIdsForUser_Handler(srv interface{}, ctx context.Con
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var CourseService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "CourseService",
+	ServiceName: "proto.course.CourseService",
 	HandlerType: (*CourseServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

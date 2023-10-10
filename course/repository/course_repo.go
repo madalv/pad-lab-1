@@ -21,15 +21,27 @@ func NewCourseRepository(db *gorm.DB) *CourseRepository {
 	}
 }
 
-func (r *CourseRepository) CreateWithCategories(course *model.Course, categoryIDs []string) error {
-	// find the categories that
+// TODO shld probably move this to categ repo?
+func (r *CourseRepository) GetCategoryList(categoryIDs []string) ([]*model.Category, error) {
 	var categories []*model.Category
 	if err := r.db.Where("id IN (?)", categoryIDs).Find(&categories).Error; err != nil {
-		return err
+		return nil, err
 	}
 
-	course.Categories = categories
+	return categories, nil
+}
+
+func (r *CourseRepository) Create(course *model.Course) error {
 	return r.db.Create(course).Error
+}
+
+func (r *CourseRepository) GetByIDWithChapters(id string) (model.Course, error) {
+	var course model.Course
+	err := r.db.
+		Preload("Categories").
+		Preload("Chapters", "id, title").
+		First(&course, "id = ?", id).Error
+	return course, err
 }
 
 func (r *CourseRepository) GetByID(id string) (model.Course, error) {

@@ -10,7 +10,6 @@ import (
 type courseRepo interface {
 	GetCategoryList(categoryIDs []string) ([]*model.Category, error)
 	Create(course *model.Course) error
-	GetByID(id string) (model.Course, error)
 	GetByIDWithChapters(id string) (model.Course, error)
 	GetAll(pagination util.Pagination) []model.Course
 	GetCourseIDsForUser(userID string) []string
@@ -19,6 +18,26 @@ type courseRepo interface {
 type CourseService struct {
 	courseRepo courseRepo
 }
+
+func NewCourseService(repo courseRepo) *CourseService {
+	slog.Info("Initializing Course Service")
+
+	return &CourseService{
+		courseRepo: repo,
+	}
+}
+
+func (svc *CourseService) GetByID(id string) (model.Course, error) {
+	slog.Infof("Getting course by id %s", id)
+	course, err := svc.courseRepo.GetByIDWithChapters(id)
+	if err != nil {
+		slog.Error(err)
+		return model.Course{}, err	
+	}
+
+	return course, nil
+}
+
 
 func (svc *CourseService) Create(course model.Course, categoryIDs []string) (string, error) {
 	slog.Infof("Creating course %s", course.Title)

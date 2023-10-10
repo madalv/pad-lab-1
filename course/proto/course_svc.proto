@@ -48,7 +48,7 @@ message ChapterTitle {
 
 message CourseWithChapters {
   Course course = 1;
-  ChapterTitle chapters = 2;
+  repeated ChapterTitle chapters = 2;
 }
 
 message Courses {
@@ -81,5 +81,5 @@ message CreateChapterRequest {
 }
 
 message CourseIds {
-  repeated CourseId ids = 1;
+  repeated string ids = 1;
 }

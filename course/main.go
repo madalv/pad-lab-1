@@ -2,6 +2,7 @@ package main
 
 import (
 	api "course/api/rpc"
+	"course/repository"
 	"course/service"
 	"course/storage"
 	"net"
@@ -11,13 +12,14 @@ import (
 
 func main() {
 	// init db
-	storage.NewDatabase()
+	db := storage.NewDatabase()
 
-	// course repo
-	// courseRepo := repository.NewUserRepository(db)
+	// repositories
+	courseRepo := repository.NewCourseRepository(db)
+	_ = repository.NewChapterRepository(db)
 
-	// course service
-	courseSvc := service.CourseService{}
+	// services
+	courseSvc := service.NewCourseService(courseRepo)
 
 	// TODO get address out of config
 	listener, err := net.Listen("tcp", "localhost:50052")

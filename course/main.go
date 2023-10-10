@@ -13,6 +13,9 @@ func main() {
 	// init db
 	storage.NewDatabase()
 
+	// course repo
+	// courseRepo := repository.NewUserRepository(db)
+
 	// course service
 	courseSvc := service.CourseService{}
 

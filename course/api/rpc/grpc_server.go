@@ -9,21 +9,21 @@ import (
 	"google.golang.org/grpc"
 )
 
-type CourseService interface {
+type courseService interface {
 }
 
 type grpcServer struct {
 	pb.CourseServiceServer
-	courseService CourseService
+	courseSvc courseService
 }
 
-func NewGRPCServer(courseSvc CourseService) (*grpc.Server, error) {
+func NewGRPCServer(courseSvc courseService) (*grpc.Server, error) {
 	slog.Info("Initializing gRPC Server...")
 
 	s := grpc.NewServer()
 
 	pb.RegisterCourseServiceServer(s, &grpcServer{
-		courseService: courseSvc,
+		courseSvc: courseSvc,
 	})
 
 	return s, nil

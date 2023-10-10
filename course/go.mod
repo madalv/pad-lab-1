@@ -19,6 +19,7 @@ require (
 )
 
 require (
+	github.com/google/uuid v1.3.1
 	github.com/gookit/color v1.5.4 // indirect
 	github.com/gookit/goutil v0.6.12 // indirect
 	github.com/gookit/gsr v0.1.0 // indirect

@@ -31,19 +31,28 @@ class RecService:
   
   def get_recs_for_user(self, user_id: str, nr: int):
     """
-    Returns a list of tuples of the form [(title, id), (title, id), ...]
+    Returns a unique list of tuples of the form [(title, id), (title, id), ...]
     """
     logging.info(f'Getting recs for user {user_id}')
     list = self.course_repo.fetch_user_courses(user_id)
-    recs = []
+    recs = set()
     # if the course list is bigger than the nr of recs required, get 1 rec per course
-    nr_per_course = 1 if (nr / len(list) < 1) else nr / len(list) + 1
+    nr_per_course = 1 if (nr / len(list) < 1) else int(nr / len(list) + 1)
 
     for id in list:
-      recs.append(self.rec_sys.get_recs(id, nr_per_course))
-
+      try:
+        recs.update(self.rec_sys.get_recs(id, nr_per_course))
+      except Exception as e:
+        logging.error(e)
+        raise e
+      
     if len(recs) > nr:
-      return recs[:nr - 1]
+      return recs[:nr]
+    else:
+      return recs
+    
+
+    
 
 
   def get_recs_for_course(self, course_id: str, nr: int):
@@ -52,5 +61,3 @@ class RecService:
     """
     logging.info(f'Getting recs for course {course_id}')
     return self.rec_sys.get_recs(course_id, nr)
-
-

@@ -16,17 +16,17 @@ class RecServiceStub(object):
             channel: A grpc.Channel.
         """
         self.GetRecsForCourse = channel.unary_unary(
-                '/proto.RecService/GetRecsForCourse',
+                '/proto.rec.RecService/GetRecsForCourse',
                 request_serializer=rec__svc__pb2.CourseRecsRequest.SerializeToString,
                 response_deserializer=rec__svc__pb2.RecsResponse.FromString,
                 )
         self.GetRecsForUser = channel.unary_unary(
-                '/proto.RecService/GetRecsForUser',
+                '/proto.rec.RecService/GetRecsForUser',
                 request_serializer=rec__svc__pb2.UserRecsRequest.SerializeToString,
                 response_deserializer=rec__svc__pb2.RecsResponse.FromString,
                 )
         self.AddCourse = channel.unary_unary(
-                '/proto.RecService/AddCourse',
+                '/proto.rec.RecService/AddCourse',
                 request_serializer=rec__svc__pb2.Course.SerializeToString,
                 response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                 )
@@ -73,7 +73,7 @@ def add_RecServiceServicer_to_server(servicer, server):
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'proto.RecService', rpc_method_handlers)
+            'proto.rec.RecService', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
 
 
@@ -92,7 +92,7 @@ class RecService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/proto.RecService/GetRecsForCourse',
+        return grpc.experimental.unary_unary(request, target, '/proto.rec.RecService/GetRecsForCourse',
             rec__svc__pb2.CourseRecsRequest.SerializeToString,
             rec__svc__pb2.RecsResponse.FromString,
             options, channel_credentials,
@@ -109,7 +109,7 @@ class RecService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/proto.RecService/GetRecsForUser',
+        return grpc.experimental.unary_unary(request, target, '/proto.rec.RecService/GetRecsForUser',
             rec__svc__pb2.UserRecsRequest.SerializeToString,
             rec__svc__pb2.RecsResponse.FromString,
             options, channel_credentials,
@@ -126,7 +126,7 @@ class RecService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/proto.RecService/AddCourse',
+        return grpc.experimental.unary_unary(request, target, '/proto.rec.RecService/AddCourse',
             rec__svc__pb2.Course.SerializeToString,
             google_dot_protobuf_dot_empty__pb2.Empty.FromString,
             options, channel_credentials,

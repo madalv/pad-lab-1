@@ -15,7 +15,7 @@ class CourseServiceStub(object):
             channel: A grpc.Channel.
         """
         self.GetCourseIdsForUser = channel.unary_unary(
-                '/CourseService/GetCourseIdsForUser',
+                '/proto.course.CourseService/GetCourseIdsForUser',
                 request_serializer=course__svc__pb2.UserId.SerializeToString,
                 response_deserializer=course__svc__pb2.CourseIds.FromString,
                 )
@@ -40,7 +40,7 @@ def add_CourseServiceServicer_to_server(servicer, server):
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'CourseService', rpc_method_handlers)
+            'proto.course.CourseService', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
 
 
@@ -59,7 +59,7 @@ class CourseService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/CourseService/GetCourseIdsForUser',
+        return grpc.experimental.unary_unary(request, target, '/proto.course.CourseService/GetCourseIdsForUser',
             course__svc__pb2.UserId.SerializeToString,
             course__svc__pb2.CourseIds.FromString,
             options, channel_credentials,

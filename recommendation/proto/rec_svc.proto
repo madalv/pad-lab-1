@@ -2,7 +2,7 @@ syntax="proto3";
 
 import "google/protobuf/empty.proto";
 
-package proto;
+package proto.rec;
 
 service RecService {
   rpc GetRecsForCourse(CourseRecsRequest) returns (RecsResponse);

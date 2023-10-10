@@ -47,8 +47,7 @@ class CourseRepo:
     try:
       response = self.course_grpc_client.GetCourseIdsForUser(
          pb2.UserId(id=user_id), 
-         timeout=self.timeout_seconds)
-      
+         timeout=self.timeout_sec)
       return response.ids
     except grpc.RpcError as e:
       if e.code() == grpc.StatusCode.DEADLINE_EXCEEDED:

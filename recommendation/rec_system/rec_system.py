@@ -12,10 +12,14 @@ class RecSystem:
     logging.info("Init Recommendation System")
     self.dataframe = pd.DataFrame(courses, columns=['course_id', 'title', 'description', 'author', 'categories'])
     self.similarities = self.process_similarities(self.dataframe)
-    self.dataframe = self.clean_dataframe(self.dataframe)
   
   def append_course(self, course: dict):
-    self.dataframe.loc[len(self.dataframe)] = course
+    try:
+      self.dataframe.loc[len(self.dataframe)] = course
+    except Exception as e:
+      logging.error(e)
+      raise e
+
     self.similarities = self.process_similarities(self.dataframe)
 
   def clean_text(self, author):
@@ -31,7 +35,7 @@ class RecSystem:
     return df
 
   def process_similarities(self, df):
-    # df = self.clean_dataframe(df)
+    df = self.clean_dataframe(df)
 
     df['data'] = df[df.columns[1:]].apply(
         lambda x: ' '.join(x.dropna().astype(str)),

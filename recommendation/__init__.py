@@ -5,6 +5,7 @@ from repository import course_repo as cr
 from service import rec_service as svc
 from api import grpc_server
 from pb import course_svc_pb2_grpc as pb2_grpc
+from pb import course_svc_pb2 as pb2
 
 
 if __name__ == '__main__':
@@ -17,6 +18,7 @@ if __name__ == '__main__':
   # grpc stub for the Course Service
   stub = pb2_grpc.CourseServiceStub(channel)
   repo = cr.CourseRepo(stub, alchemyEngine)
+
   
   rec_svc = svc.RecService(repo)
 

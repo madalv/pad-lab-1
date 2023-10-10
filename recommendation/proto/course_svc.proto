@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+package proto.course;
+
 service CourseService {
   rpc GetCourseIdsForUser(UserId) returns (CourseIds);
 }

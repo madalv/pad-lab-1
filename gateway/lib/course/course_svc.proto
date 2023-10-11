@@ -1,0 +1,91 @@
+syntax="proto3";
+
+package proto.course;
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+service CourseService {
+  rpc GetCourses(PaginationQuery) returns (Courses);
+  rpc GetCourse(CourseId) returns (CourseWithChapters);
+  rpc CreateCourse(CreateCourseRequest) returns (CourseId);
+  rpc GetChapter(ChapterId) returns (Chapter);
+  rpc CreateChapter(CreateChapterRequest) returns (ChapterId);
+  rpc GetCourseIdsForUser(UserId) returns (CourseIds);
+  rpc GetServerStatus(google.protobuf.Empty) returns (ServerStatus);
+}
+
+message ServerStatus {
+  string status = 1;
+}
+
+message PaginationQuery {
+  uint64 page = 1;
+  uint64 limit = 2;
+}
+
+message Category {
+  string id = 1;
+  string title = 2;
+}
+
+message Course {
+  string id = 1;
+  string author_id = 2;
+  string title = 3;
+  string description = 4;
+  repeated Category categories = 5;
+  google.protobuf.Timestamp created_at = 6;
+  google.protobuf.Timestamp updated_at = 7;
+}
+
+message Chapter {
+  string id = 1;
+  string course_id = 2;
+  string title = 3;
+  string body = 4;
+  google.protobuf.Timestamp created_at = 5;
+  google.protobuf.Timestamp updated_at = 6;
+}
+
+message ChapterTitle {
+  string id = 1;
+  string title = 2;
+}
+
+message CourseWithChapters {
+  Course course = 1;
+  repeated ChapterTitle chapters = 2;
+}
+
+message Courses {
+  repeated Course courses = 1;
+}
+
+message CourseId {
+  string id = 1;
+}
+
+message ChapterId {
+  string id = 1;
+}
+
+message UserId {
+  string id = 1;
+}
+
+message CreateCourseRequest {
+  string author_id = 1;
+  string title = 2;
+  string description = 3;
+  repeated string category_ids = 4; 
+}
+
+message CreateChapterRequest {
+  string course_id = 1;
+  string title = 2;
+  string body = 3;
+}
+
+message CourseIds {
+  repeated string ids = 1;
+}

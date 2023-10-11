@@ -1,0 +1,43 @@
+syntax="proto3";
+
+import "google/protobuf/empty.proto";
+
+package proto.rec;
+
+service RecService {
+  rpc GetRecsForCourse(CourseRecsRequest) returns (RecsResponse);
+  rpc GetRecsForUser(UserRecsRequest) returns (RecsResponse);
+  rpc AddCourse(Course) returns (google.protobuf.Empty);
+  rpc GetServerStatus(google.protobuf.Empty) returns (ServerStatus);
+}
+
+message ServerStatus {
+  string status = 1;
+}
+
+message CourseRecsRequest {
+  string course_id = 1;
+  uint64 recs_nr = 2;
+}
+
+message UserRecsRequest {
+  string user_id = 1;
+  uint64 recs_nr = 2;
+}
+
+message Course {
+  string id = 1;
+  string title = 2;
+  string description = 3;
+  repeated string categories = 4;
+  string author = 5;
+}
+
+message CourseRec {
+  string id = 1;
+  string title = 2;
+}
+
+message RecsResponse {
+  repeated CourseRec recs = 1;
+}

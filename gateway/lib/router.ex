@@ -11,11 +11,11 @@ defmodule Gateway.Router do
   plug(:match)
   plug(:dispatch)
 
-  def encode(data) do
-    data |> Jason.encode!() |> Jason.Formatter.pretty_print()
+  get "/users/:id/recommendations" do
+    send_resp(conn, 200, "ok man")
   end
 
-  get "/users/:id/recommendations" do
+  get "/courses/:id/recommendations" do
     send_resp(conn, 200, "ok man")
   end
 

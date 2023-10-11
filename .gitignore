@@ -29,3 +29,5 @@ __pycache__
 .env
 
 .idea
+
+erl_crash.dump

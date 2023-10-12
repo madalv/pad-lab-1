@@ -22,26 +22,20 @@ Some projects that focus on MOOC education and employ microservices are: edX, Co
 ### Service Boundaries
 
 Services:
-* User Service -- encapsulates managing the users of the platform. Responsible for storing users, creating them, etc.
-* Auth Service -- is responsible for authenticating users & generating tokens, validating tokens.
+* Recommendation Service -- responsible for generating recommendations for courses.
 * Course Service -- responsible for managing courses.
 * Gateway -- defines the API for the whole platform. Responsible for "forwarding" the request to the specific microservice and collecting the responses. Must also validate the incoming requests and ensure that protected routes are only accessible to authenticated requests.
 
 A simple architecture diagram:
 
-![architecture_diagram](architecture.drawio.png)
+![architecture_diagram](arch.drawio.png)
 ### Tech Stack and Communication Patterns
 
-* User Service
+* Recommendation Service
   * Language: Go
   * Frameworks: gRPC, Gorm
   * Communication: synchronous communication via RPC
   * Database: Postgres
-* Auth Service
-  * Language: Go
-  * Frameworks: gRPC, Gorm
-  * Communication: synchronous communication via RPC
-  * Datastore: Redis
 * Course Service
   * Language: Go
   * Frameworks: gRPC, Gorm
@@ -56,36 +50,17 @@ A simple architecture diagram:
 #### Data
 Each service will have its own database/cache, since the data is modular enough that sharing one data source is not necessarry.
 
-The User Service will store user data in a Postgres DB. 
+The Rec Service will store courses data for the dataframe in a Postgres DB. 
 
 The Course Service will store course-adjacent data (courses, course categories, course chapters, users_courses cross ref table) in a Postgres DB. 
 
-The Auth Service will store the tokens of logged in users in a Redis Cache.
 
 #### Endpoints
 
 HTTP Gateway endpoints: 
 
-* Course `/api/v1/courses`
-  * GET `/` -- gets all courses
-    * Response body:
-    ```json
-    [{
-      "id": "60ba873d-721b-436e-a687-06e8c6298623",
-      "author": {
-        "id": "60ba873d-721b-436e-a687-06e8c6298623",
-        "username": "madalv",
-        "first_name":  "Vlada",
-        "last_name": "Magal",
-      },
-      "title": "Very Nice Course",
-      "description": "This is a very nice course."
-      "created_at": "2023-09-12T17:34:36.261285961Z",
-      "updated_at": "2023-09-12T17:34:36.261285961Z"
-    }, ...]
-    ```
-  * GET `/user` -- gets courses for authenticated user
-    * **Requires bearer token in Authorization header**
+* Course `/api/v1/courses?page={page}&limit={limit}`
+  * GET `/` -- gets all courses, paginated
     * Response body:
     ```json
     [{
@@ -122,33 +97,45 @@ HTTP Gateway endpoints:
       "created_at": "2023-09-12T17:34:36.261285961Z",
       "updated_at": "2023-09-12T17:34:36.261285961Z",
       "chapters": [{
+        "course_id": "80ba873d-721b-436e-a687-06e8c6298623",
         "id": "80ba873d-721b-436e-a687-06e8c6298623",
-        "title": "Chapter 1 Title"
+        "title": "Chapter 1 Title",
+        "body": "body"
       }, ...],
     }
     ```
   * POST `/` -- creates course
-    * **Requires bearer token in Authorization header**
     * Request body:
     ```json
     {
       "title": "Very Nice Course",
-      "description": "This is a very nice course."
-      "categories": [{
-      "id": "70ba873d-721b-436e-a687-06e8c6298623",
-      "title": "Software Engineering"
+      "description": "This is a very nice course.",
+      "author_id": "70ba873d-721b-436e-a687-06e8c6298623",
+      "categories": ["70ba873d-721b-436e-a687-06e8c6298623"]
     }, ...],
     }
     ```
-    * Response body: same as GET `/:id`
+  * GET `/:id/recommendations?recs_nr={nr}`
+    * Response body:
+    ```json
+    {
+    "recs": [
+        {
+            "id": "73423313-6745-4f65-9f49-caca69450302",
+            "title": "Introduction To Java Programming"
+        },
+        {
+            "id": "2d2a1c58-00db-438f-9a40-7326dad3d77b",
+            "title": "Introduction To Perl Programming"
+        }
+      ]
+    }
+    ```
   * POST `:id/enroll` -- enrolls authenticated user into specified course 
-    * **Requires bearer token in Authorization header**
   * DELETE `:id/enroll` -- deletes enrollment for the specified course
-    * **Requires bearer token in Authorization header**
 
 * Chapter `api/v1/chapters`
   * GET `/:id` -- get course chapter
-    * **Requires bearer token in Authorization header**
     * Response body:
     ```json
     {
@@ -160,20 +147,48 @@ HTTP Gateway endpoints:
       "body": "In this chapter we will learn...",
     }
     ```
-  * PUT `/:id` -- replaces chapter content
-    * **Requires bearer token in Authorization header**
+  * POST `/` -- creates chapter
     * Request body:
     ```json
     {
       "title": "Chapter 1 Title",
       "body": "In this chapter we will learn...",
-      "videos": [
-        "url_1", "url_2"
-      ]
+      "course_id": "70ba873d-721b-436e-a687-06e8c6298623",
     }
     ```
   * DELETE `/:id` -- deletes course chapter
-    * **Requires bearer token in Authorization header**
+
+* User `/api/v1/users`
+  * GET `/:id/courses` -- gets courses for user
+    * Response body:
+    ```json
+    [{
+      "id": "60ba873d-721b-436e-a687-06e8c6298623",
+      "author_id": "60ba873d-721b-436e-a687-06e8c6298623",
+      "title": "Very Nice Course",
+      "description": "This is a very nice course.",
+      "created_at": "2023-09-12T17:34:36.261285961Z",
+      "updated_at": "2023-09-12T17:34:36.261285961Z",
+      "categories": [],
+      "chapters": []
+    }, ...]
+    ```
+  * GET `/:id/recommendations?recs_nr={nr}` -- gets an amount of recommendations for a user based on the courses the user is enrolled in
+    * Response body:
+    ```json
+    {
+    "recs": [
+        {
+            "id": "73423313-6745-4f65-9f49-caca69450302",
+            "title": "Introduction To Java Programming"
+        },
+        {
+            "id": "2d2a1c58-00db-438f-9a40-7326dad3d77b",
+            "title": "Introduction To Perl Programming"
+        }
+      ]
+    }
+    ```
 
 ### Deployment and Scaling
 

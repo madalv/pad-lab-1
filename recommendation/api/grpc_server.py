@@ -26,21 +26,21 @@ class RecServer(pb2_grpc.RecServiceServicer):
     except Exception as e:
       context.set_code(grpc.StatusCode.INTERNAL)
       context.set_details(str(e))
-      return None
     
   def GetRecsForUser(self, request, context):
     try:
       recs = []
       raw_recs = self.rec_svc.get_recs_for_user(request.user_id, request.recs_nr)
+
       for rec in raw_recs:
         title, id = rec
         instance = pb2.CourseRec(id=id, title=title)
         recs.append(instance)
       return pb2.RecsResponse(recs = recs)
-    except:
+    except Exception as e:
+      logging.error(e)
       context.set_code(grpc.StatusCode.INTERNAL)
-      context.set_details('failed to get recommendations')
-      return None
+      context.set_details(str(e))
     
   def AddCourse(self, request, context):
     try:
@@ -56,7 +56,6 @@ class RecServer(pb2_grpc.RecServiceServicer):
     except Exception as e:
       context.set_code(grpc.StatusCode.INTERNAL)
       context.set_details('failed to add course')
-      return None
     
   def GetServerStatus(self, request, context):
     return pb2.ServerStatus(status="SERVING")

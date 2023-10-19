@@ -35,25 +35,25 @@ class RecService:
     """
     logging.info(f'Getting recs for user {user_id}')
     list = self.course_repo.fetch_user_courses(user_id)
-    recs = set()
+    # logging.debug(list)
+    recs = []
+
+    if len(list) == 0:
+      raise Exception("no courses found for user")
+    
     # if the course list is bigger than the nr of recs required, get 1 rec per course
     nr_per_course = 1 if (nr / len(list) < 1) else int(nr / len(list) + 1)
 
     for id in list:
-      try:
-        recs.update(self.rec_sys.get_recs(id, nr_per_course))
-      except Exception as e:
-        logging.error(e)
-        raise e
-      
+      course_recs = self.rec_sys.get_recs(id, nr_per_course)
+      for rec in course_recs:
+        if rec not in list:
+          recs.append(rec)
+
     if len(recs) > nr:
       return recs[:nr]
     else:
       return recs
-    
-
-    
-
 
   def get_recs_for_course(self, course_id: str, nr: int):
     """

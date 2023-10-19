@@ -2,11 +2,11 @@ package main
 
 import (
 	api "course/api/rpc"
+	"course/pb/pb_rec"
 	"course/repository"
 	"course/service"
 	"course/storage"
 	"net"
-	"course/pb/pb_rec"
 
 	"github.com/gookit/slog"
 	"google.golang.org/grpc"
@@ -29,11 +29,13 @@ func main() {
 
 	// repositories
 	courseRepo := repository.NewCourseRepository(db)
+	chapterRepo := repository.NewChapterRepository(db)
 	recRepo := repository.NewRecommendationRepository(client)
 	_ = repository.NewChapterRepository(db)
 
 	// services
 	courseSvc := service.NewCourseService(courseRepo, recRepo)
+	chapterSvc := service.NewChapterService(chapterRepo, courseRepo)
 
 	// TODO get address out of config
 	listener, err := net.Listen("tcp", "localhost:50052")
@@ -41,7 +43,7 @@ func main() {
 		slog.Fatal(err)
 	}
 
-	srv, err := api.NewGRPCServer(courseSvc)
+	srv, err := api.NewGRPCServer(courseSvc, chapterSvc)
 	if err != nil {
 		slog.Fatalf("Could not init gRPC Server: %s", err)
 	}

@@ -24,26 +24,68 @@ type courseService interface {
 	GetCourseIDsForUser(userID string) []string
 }
 
-type grpcServer struct {
-	pb.CourseServiceServer
-	courseSvc courseService
+type chapterService interface {
+	GetByID(id string) (model.Chapter, error)
+	Create(chapter model.Chapter) (string, error)
 }
 
-func NewGRPCServer(courseSvc courseService) (*grpc.Server, error) {
+type grpcServer struct {
+	pb.CourseServiceServer
+	courseSvc  courseService
+	chapterSvc chapterService
+}
+
+func loggingInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
+	slog.Printf("Received request for method %s with request: %v", info.FullMethod, req)
+	return handler(ctx, req)
+}
+
+func NewGRPCServer(courseSvc courseService, chapterSvc chapterService) (*grpc.Server, error) {
 	slog.Info("Initializing gRPC Server...")
 
-	s := grpc.NewServer()
+	s := grpc.NewServer(
+		grpc.UnaryInterceptor(loggingInterceptor),
+	)
 
 	pb.RegisterCourseServiceServer(s, &grpcServer{
-		courseSvc: courseSvc,
+		courseSvc:  courseSvc,
+		chapterSvc: chapterSvc,
 	})
 
 	return s, nil
 }
 
 // CreateChapter implements pb.CourseServiceServer.
-func (srv *grpcServer) CreateChapter(context.Context, *pb.CreateChapterRequest) (*pb.ChapterId, error) {
-	panic("unimplemented")
+func (srv *grpcServer) CreateChapter(_ context.Context, req *pb.CreateChapterRequest) (*pb.ChapterId, error) {
+	chapter := model.Chapter{
+		Title:    req.Title,
+		Body:     req.Body,
+		CourseID: req.CourseId,
+	}
+
+	id, err := srv.chapterSvc.Create(chapter)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.ChapterId{Id: id}, nil
+}
+
+// GetChapter implements pb.CourseServiceServer.
+func (srv *grpcServer) GetChapter(_ context.Context, req *pb.ChapterId) (*pb.Chapter, error) {
+	chapter, err := srv.chapterSvc.GetByID(req.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.Chapter{
+		Id:        chapter.ID,
+		CourseId:  chapter.CourseID,
+		Title:     chapter.Title,
+		Body:      chapter.Body,
+		CreatedAt: timestamppb.New(chapter.CreatedAt),
+		UpdatedAt: timestamppb.New(chapter.UpdatedAt),
+	}, nil
 }
 
 // CreateCourse implements pb.CourseServiceServer.
@@ -60,11 +102,6 @@ func (srv *grpcServer) CreateCourse(_ context.Context, req *pb.CreateCourseReque
 	}
 
 	return &pb.CourseId{Id: id}, nil
-}
-
-// GetChapter implements pb.CourseServiceServer.
-func (*grpcServer) GetChapter(context.Context, *pb.ChapterId) (*pb.Chapter, error) {
-	panic("unimplemented")
 }
 
 // GetCourse implements pb.CourseServiceServer.

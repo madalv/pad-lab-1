@@ -19,7 +19,7 @@ func NewChapterRepository(db *gorm.DB) *ChapterRepository {
 	}
 }
 
-func (r *ChapterRepository) Create(chapter *model.Chapter, categoryIDs []string) error {
+func (r *ChapterRepository) Create(chapter *model.Chapter) error {
 	return r.db.Create(chapter).Error
 }
 

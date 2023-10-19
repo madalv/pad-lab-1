@@ -37,9 +37,11 @@ func (r *CourseRepository) Create(course *model.Course) error {
 
 func (r *CourseRepository) GetByIDWithChapters(id string) (model.Course, error) {
 	var course model.Course
-	err := r.db.First(&course, "id = ?", id).
+	err := r.db.
 		Preload("Categories").
-		Preload("Chapters", "id, title").Error
+		Preload("Chapters").Select("id", "title").
+		First(&course, "id = ?", id).
+		Error
 	return course, err
 }
 

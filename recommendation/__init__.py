@@ -12,8 +12,8 @@ if __name__ == '__main__':
   logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
   # TODO read this out of .env
-  alchemyEngine = create_engine('postgresql+psycopg2://admin:password@localhost:5436/rec_db', pool_recycle=3600)
-  channel = grpc.insecure_channel('localhost:50052') 
+  alchemyEngine = create_engine('postgresql+psycopg2://admin:password@rec_db:5432/rec_db', pool_recycle=3600)
+  channel = grpc.insecure_channel('course_svc:50052') 
   
   # grpc stub for the Course Service
   stub = pb2_grpc.CourseServiceStub(channel)

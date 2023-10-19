@@ -13,6 +13,10 @@ defmodule Gateway.Router do
   # TODO validate dtos before sending to services
   # TODO add rate limiter
 
+  post "/courses" do
+    
+  end
+
   get "/courses/:id" do
     reply = Course.Client.get_course(id)
 
@@ -40,15 +44,13 @@ defmodule Gateway.Router do
       nil ->
         conn
         |> put_resp_content_type("text/plain")
-        |> send_resp(400, "Missing recs_nr query parameter")
+        |> send_resp(400, "missing recs_nr query parameter")
       nr ->
         {val, _} = Integer.parse(nr)
         val
       end
 
     reply = Rec.Client.get_recs_for_course(id, recs_nr)
-
-    Logger.debug(inspect(reply))
 
     case reply do
       {:ok, recs} ->
@@ -75,7 +77,7 @@ defmodule Gateway.Router do
       nil ->
         conn
         |> put_resp_content_type("text/plain")
-        |> send_resp(400, "Missing recs_nr query parameter")
+        |> send_resp(400, "missing recs_nr query parameter")
       nr ->
         {val, _} = Integer.parse(nr)
         val

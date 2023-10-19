@@ -62,7 +62,7 @@ class RecServer(pb2_grpc.RecServiceServicer):
 
 def serve(rec_svc):
   # TODO read from .env
-  address = '127.0.0.1:50051'
+  address = '[::]:50051'
   logging.info('Starting Rec gRPC Server')
   server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
   pb2_grpc.add_RecServiceServicer_to_server(RecServer(rec_svc), server)

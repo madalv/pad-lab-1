@@ -36,7 +36,7 @@ func connect() *gorm.DB {
 	var err error
 
 	// TODO read this out of env
-	dsn := "host=localhost user=admin password=password dbname=course_db port=5437 sslmode=disable"
+	dsn := "host=course_db user=admin password=password dbname=course_db port=5432 sslmode=disable"
 
 	database, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 

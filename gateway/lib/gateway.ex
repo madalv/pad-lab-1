@@ -6,10 +6,10 @@ defmodule Gateway do
     Logger.info("Starting Gateway...")
 
     # TODO get addresses out of config
-    {:ok, course_channel} = GRPC.Stub.connect("localhost:50052")
+    {:ok, course_channel} = GRPC.Stub.connect("course_svc:50052")
     Logger.info("Successfully connected to Course Svc")
 
-    {:ok, rec_channel} = GRPC.Stub.connect("localhost:50051")
+    {:ok, rec_channel} = GRPC.Stub.connect("rec_svc:50051")
     Logger.info("Successfully connected to Rec Svc")
 
     # TODO consider using poolboy

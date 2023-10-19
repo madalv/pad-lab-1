@@ -24,13 +24,13 @@ defmodule Rec.Client do
 
   def handle_call({:get_recs_for_user, user_id, recs_nr}, _from, channel) do
     request = %Proto.Rec.UserRecsRequest{user_id: user_id, recs_nr: recs_nr}
-    resp = channel |> Proto.Rec.RecService.Stub.get_recs_for_user(request)
+    resp = channel |> Proto.Rec.RecService.Stub.get_recs_for_user(request, timeout: 2000)
     {:reply, resp, channel}
   end
 
   def handle_call({:get_recs_for_course, course_id, recs_nr}, _from, channel) do
     request = %Proto.Rec.CourseRecsRequest{course_id: course_id, recs_nr: recs_nr}
-    resp = channel |> Proto.Rec.RecService.Stub.get_recs_for_course(request)
+    resp = channel |> Proto.Rec.RecService.Stub.get_recs_for_course(request, timeout: 2000)
     {:reply, resp, channel}
   end
 end

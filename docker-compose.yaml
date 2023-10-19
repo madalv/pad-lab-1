@@ -30,7 +30,50 @@ services:
       - course-db:/var/lib/postgresql/data
     ports:
       - "5437:5432"
+  
+  redis:
+    image: redis:7.0.13
+    container_name: redis
+    volumes:
+      - redis-data:/data
+    ports:
+      - "6379:6379"
+
+  course_svc:
+    container_name: course_svc
+    build:
+      context: ./course
+      dockerfile: Dockerfile
+    depends_on:
+      - course_db
+    ports:
+      - "50052:50052"
+
+  rec_svc:
+    container_name: rec_svc
+    build:
+      context: ./recommendation
+      dockerfile: Dockerfile
+    depends_on:
+      - course_svc
+      - rec_db
+    ports:
+      - "50051:50051"  
+  
+  gateway:
+    container_name: gateway
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile
+    depends_on:
+      - course_svc
+      - rec_svc
+      - redis
+    ports:
+       - "8080:8080"
+
 
 volumes:
   rec-db:
   course-db:
+  redis-data:

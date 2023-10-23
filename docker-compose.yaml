@@ -37,7 +37,7 @@ services:
     volumes:
       - redis-data:/data
     ports:
-      - "6379:6379"
+      - "7379:6379"
 
   course_svc:
     container_name: course_svc

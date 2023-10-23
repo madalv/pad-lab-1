@@ -26,7 +26,9 @@ defmodule Gateway.MixProject do
       {:plug_cowboy, "~> 2.0"},
       {:grpc, "~> 0.7"},
       {:protobuf, "~> 0.11"},
-      {:google_protos, "~> 0.1"}
+      {:google_protos, "~> 0.1"},
+      {:hammer, "~> 6.1"},
+      {:dotenvy, "~> 0.8.0"}
     ]
   end
 end

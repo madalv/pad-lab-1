@@ -16,9 +16,12 @@ RUN go build -o main
 # Final stage
 FROM scratch
 
+# Set the environment variable, which determines the application mode
+ENV APP_MODE=prod
+
 # Copy the executable binary from the builder stage into the final image
 COPY --from=builder /app/main /main
-COPY --from=builder /app/.env ./
+COPY --from=builder /app/.prod.env ./
 
 # Run the application
 CMD ["/main"]

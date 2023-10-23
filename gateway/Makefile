@@ -3,6 +3,6 @@ proto:
 	protoc -I ./lib/rec --elixir_out=plugins=grpc:./lib/rec rec_svc.proto
 
 run: 
-	mix run --no-halt
+	MIX_ENV=dev mix run --no-halt
 
 .PHONY: proto run

@@ -60,9 +60,7 @@ class RecServer(pb2_grpc.RecServiceServicer):
   def GetServerStatus(self, request, context):
     return pb2.ServerStatus(status="SERVING")
 
-def serve(rec_svc):
-  # TODO read from .env
-  address = '[::]:50051'
+def serve(rec_svc, address):
   logging.info('Starting Rec gRPC Server')
   server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
   pb2_grpc.add_RecServiceServicer_to_server(RecServer(rec_svc), server)

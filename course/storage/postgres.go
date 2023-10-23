@@ -9,8 +9,8 @@ import (
 	"gorm.io/gorm"
 )
 
-func NewDatabase() *gorm.DB {
-	db := connect()
+func NewDatabase(dsn string) *gorm.DB {
+	db := connect(dsn)
 	err := db.AutoMigrate(&model.Category{})
 
 	if err != nil {
@@ -32,11 +32,8 @@ func NewDatabase() *gorm.DB {
 	return db
 }
 
-func connect() *gorm.DB {
+func connect(dsn string) *gorm.DB {
 	var err error
-
-	// TODO read this out of env
-	dsn := "host=course_db user=admin password=password dbname=course_db port=5432 sslmode=disable"
 
 	database, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 

@@ -13,5 +13,8 @@ COPY . .
 
 # RUN pip install grpcio grpcio-tools SQLAlchemy pandas scikit-learn psycopg2-binary
 
+# Set the environment variable, which determines the application mode
+ENV APP_MODE=prod
+
 # Define the command to run your application
 CMD ["python3", "__init__.py"]

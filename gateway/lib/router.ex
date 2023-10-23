@@ -13,17 +13,26 @@ defmodule Gateway.Router do
   # TODO validate dtos before sending to services
   # TODO add rate limiter
 
+
+  # TODO create chapter
+
+  # TODO create course
   post "/courses" do
-    
+
   end
 
+  # TODO get courses, paginated
+
+  # TODO get chapter
+
+
   get "/courses/:id" do
+    # assume request has passed auth middleware and it has decoded this user id from a token
+    uid = Plug.Conn.get_req_header(conn, "user-id")
+
     reply = Course.Client.get_course(id)
 
     case reply do
-      {:error, error} ->
-        send_resp(conn, 500, error)
-
       {:ok, course} ->
         encoded = Protobuf.JSON.encode(course)
 
@@ -35,9 +44,19 @@ defmodule Gateway.Router do
           {:error, _} ->
             send_resp(conn, 500, "failed to encode response to json")
         end
+
+      {:error, %GRPC.RPCError{status: 4, message: _msg}} ->
+        conn
+        |> put_resp_header("Connection", "close")
+        |> send_resp(408, "Request timeout")
+
+      error ->
+        Logger.error(inspect(error))
+        send_resp(conn, 500, "failed to get recs")
     end
   end
 
+  
   get "/courses/:id/recommendations" do
     # extract recs nr from query
     recs_nr = case Map.get(conn.query_params, "recs_nr") do
@@ -55,7 +74,6 @@ defmodule Gateway.Router do
     case reply do
       {:ok, recs} ->
         encoded = Protobuf.JSON.encode(recs)
-
         case encoded do
           {:ok, json} ->
             conn
@@ -65,11 +83,17 @@ defmodule Gateway.Router do
             send_resp(conn, 500, "failed to encode response to json")
         end
 
+      {:error, %GRPC.RPCError{status: 4, message: _msg}} ->
+          conn
+          |> put_resp_header("Connection", "close")
+          |> send_resp(408, "Request timeout")
+
        error ->
         Logger.error(inspect(error))
         send_resp(conn, 500, "failed to get recs")
     end
   end
+
 
   get "/users/:id/recommendations" do
     # extract recs nr from query
@@ -89,18 +113,27 @@ defmodule Gateway.Router do
     case reply do
       {:ok, recs} ->
         encoded = Protobuf.JSON.encode(recs)
-
         case encoded do
           {:ok, json} ->
             conn
             |> put_resp_content_type("application/json")
             |> send_resp(200, json)
+          {:error, %GRPC.RPCError{message: "timeout when waiting for server", status: _}} ->
+           conn
+            |> put_resp_header("Connection", "close")
+            |> send_resp(408, "Request timeout")
           {:error, _} ->
             send_resp(conn, 500, "failed to encode response to json")
         end
-      {:error, error} ->
-        encoded = Protobuf.JSON.encode(error)
-        send_resp(conn, 500, encoded)
+
+      {:error, %GRPC.RPCError{status: 4, message: _msg}} ->
+        conn
+        |> put_resp_header("Connection", "close")
+        |> send_resp(408, "Request timeout")
+
+      error ->
+        Logger.error(inspect(error))
+        send_resp(conn, 500, "failed to get recs")
     end
 
   end

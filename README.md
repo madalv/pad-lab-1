@@ -59,8 +59,8 @@ The Course Service will store course-adjacent data (courses, course categories, 
 
 HTTP Gateway endpoints: 
 
-* Course `/api/v1/courses?page={page}&limit={limit}`
-  * GET `/` -- gets all courses, paginated
+* Course `/api/v1/courses`
+  * GET `?page={page}&limit={limit}` -- gets all courses, paginated
     * Response body:
     ```json
     [{

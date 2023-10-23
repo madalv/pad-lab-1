@@ -7,18 +7,31 @@ import (
 	"course/service"
 	"course/storage"
 	"net"
+	"os"
 
 	"github.com/gookit/slog"
+	"github.com/joho/godotenv"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
 
 func main() {
+
+	appMode := os.Getenv("APP_MODE")
+
+	if appMode == "prod" {
+		godotenv.Load(".prod.env")
+	} else if appMode == "dev" {
+		godotenv.Load(".local.env")
+	} else {
+		slog.Fatalf("Invalid mode: %s. Supported modes are 'dev' and 'prod'.\n", appMode)
+	}
+
 	// init db
-	db := storage.NewDatabase()
+	db := storage.NewDatabase(os.Getenv("POSTGRES_DSN"))
 
 	// TODO get address out of config
-	conn, err := grpc.Dial("rec_svc:50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.Dial(os.Getenv("REC_SVC_ADDRESS"), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		slog.Fatalf("Failed to connect to Rec Service: %s", err)
 	}
@@ -38,7 +51,7 @@ func main() {
 	chapterSvc := service.NewChapterService(chapterRepo, courseRepo)
 
 	// TODO get address out of config
-	listener, err := net.Listen("tcp", "[::]:50052")
+	listener, err := net.Listen("tcp", os.Getenv("GRPC_ADDRESS"))
 	if err != nil {
 		slog.Fatal(err)
 	}

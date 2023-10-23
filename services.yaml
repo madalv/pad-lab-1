@@ -1,0 +1,107 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rec-svc
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: rec-svc
+  template:
+    metadata:
+      labels:
+        app: rec-svc
+    spec:
+      containers:
+      - name: rec-svc
+        image: madalv/rec-svc:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 50051
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rec-svc
+spec:
+  selector:
+    app: rec-svc
+  ports:
+  - name: rec-svc-port-50051
+    protocol: TCP
+    port: 50051
+    targetPort: 50051
+  type: ClusterIP
+  
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: course-svc
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: course-svc
+  template:
+    metadata:
+      labels:
+        app: course-svc
+    spec:
+      containers:
+      - name: course-svc
+        image: madalv/course-svc:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 50052
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: course-svc
+spec:
+  selector:
+    app: course-svc
+  ports:
+  - name: course-svc-port-50052
+    protocol: TCP
+    port: 50052
+    targetPort: 50052
+  type: ClusterIP
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gateway
+  template:
+    metadata:
+      labels:
+        app: gateway
+    spec:
+      containers:
+      - name: gateway
+        image: madalv/gateway:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway
+spec:
+  selector:
+    app: gateway
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 8080
+  type: LoadBalancer
+

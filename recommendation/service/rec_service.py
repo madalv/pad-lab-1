@@ -10,6 +10,8 @@ class RecService:
     logging.info("Init Recommendation Service")
     self.course_repo = course_repo
     courses = self.course_repo.fetch_courses()
+    # TODO don't do this
+    courses = courses if courses != [] else [('test', 'test', 'test', 'test', 'test')]
     self.rec_sys = rs.RecSystem(courses)
 
 

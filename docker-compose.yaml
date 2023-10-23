@@ -1,62 +1,64 @@
 version: '3.8'
 
 services:
-  rec_db:
-    container_name: rec_db
+  rec-db:
+    container_name: rec-db
     image: postgres:16.0
     env_file:
      - .env
     environment:
       POSTGRES_DB : rec_db
-      POSTGRES_USER: admin
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      PGDATA: /data/rec_svc_postgres
+      PGDATA: /data/rec-svc_postgres
     volumes:
       - rec-db:/var/lib/postgresql/data
     ports:
       - "5436:5432"
 
-  course_db:
-    container_name: course_db
+  course-db:
+    container_name: course-db
     image: postgres:16.0
     env_file:
      - .env
     environment:
       POSTGRES_DB : course_db
-      POSTGRES_USER: admin
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      PGDATA: /data/course_svc_postgres
+      PGDATA: /data/course-svc_postgres
     volumes:
       - course-db:/var/lib/postgresql/data
     ports:
       - "5437:5432"
   
   redis:
-    image: redis:7.0.13
+    image: redis:latest
     container_name: redis
     volumes:
       - redis-data:/data
     ports:
       - "7379:6379"
 
-  course_svc:
-    container_name: course_svc
+  course-svc:
+    container_name: course-svc
     build:
       context: ./course
       dockerfile: Dockerfile
+    image: madalv/course-svc
     depends_on:
-      - course_db
+      - course-db
     ports:
       - "50052:50052"
 
-  rec_svc:
-    container_name: rec_svc
+  rec-svc:
+    container_name: rec-svc
     build:
       context: ./recommendation
       dockerfile: Dockerfile
+    image: madalv/rec-svc
     depends_on:
-      - course_svc
-      - rec_db
+      - course-svc
+      - rec-db
     ports:
       - "50051:50051"  
   
@@ -65,13 +67,13 @@ services:
     build:
       context: ./gateway
       dockerfile: Dockerfile
+    image: madalv/gateway
     depends_on:
-      - course_svc
-      - rec_svc
+      - course-svc
+      - rec-svc
       - redis
     ports:
        - "8080:8080"
-
 
 volumes:
   rec-db:

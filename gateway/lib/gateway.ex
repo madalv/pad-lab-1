@@ -11,15 +11,16 @@ defmodule Gateway do
         source(".prod.env")
         Logger.info(env!("REC_SVC_ADDRESS"))
         Logger.info(env!("COURSE_SVC_ADDRESS"))
+
       "dev" ->
         source(".local.env")
         Logger.info(env!("REC_SVC_ADDRESS"))
         Logger.info(env!("COURSE_SVC_ADDRESS"))
+
       _ ->
         Logger.error("Unkown env!")
     end
 
-    # TODO get addresses out of config
     {:ok, course_channel} = GRPC.Stub.connect(env!("COURSE_SVC_ADDRESS"))
     Logger.info("Successfully connected to Course Svc")
 
@@ -30,8 +31,8 @@ defmodule Gateway do
       {Plug.Cowboy, scheme: :http, plug: Gateway.Router, options: [port: 8080]},
       %{
         id: Course.Client,
-        start: {Course.Client, :start_link, [course_channel]}
-        },
+        start: {Course.Client, :start_link, [{course_channel, 2000}]}
+      },
       %{
         id: Rec.Client,
         start: {Rec.Client, :start_link, [rec_channel]}

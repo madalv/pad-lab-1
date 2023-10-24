@@ -3,7 +3,7 @@ defmodule Proto.Rec.ServerStatus do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field :status, 1, type: :string
+  field(:status, 1, type: :string)
 end
 
 defmodule Proto.Rec.CourseRecsRequest do
@@ -11,8 +11,8 @@ defmodule Proto.Rec.CourseRecsRequest do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field :course_id, 1, type: :string, json_name: "courseId"
-  field :recs_nr, 2, type: :uint64, json_name: "recsNr"
+  field(:course_id, 1, type: :string, json_name: "courseId")
+  field(:recs_nr, 2, type: :uint64, json_name: "recsNr")
 end
 
 defmodule Proto.Rec.UserRecsRequest do
@@ -20,8 +20,8 @@ defmodule Proto.Rec.UserRecsRequest do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field :user_id, 1, type: :string, json_name: "userId"
-  field :recs_nr, 2, type: :uint64, json_name: "recsNr"
+  field(:user_id, 1, type: :string, json_name: "userId")
+  field(:recs_nr, 2, type: :uint64, json_name: "recsNr")
 end
 
 defmodule Proto.Rec.Course do
@@ -29,11 +29,11 @@ defmodule Proto.Rec.Course do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field :id, 1, type: :string
-  field :title, 2, type: :string
-  field :description, 3, type: :string
-  field :categories, 4, repeated: true, type: :string
-  field :author, 5, type: :string
+  field(:id, 1, type: :string)
+  field(:title, 2, type: :string)
+  field(:description, 3, type: :string)
+  field(:categories, 4, repeated: true, type: :string)
+  field(:author, 5, type: :string)
 end
 
 defmodule Proto.Rec.CourseRec do
@@ -41,8 +41,8 @@ defmodule Proto.Rec.CourseRec do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field :id, 1, type: :string
-  field :title, 2, type: :string
+  field(:id, 1, type: :string)
+  field(:title, 2, type: :string)
 end
 
 defmodule Proto.Rec.RecsResponse do
@@ -50,7 +50,7 @@ defmodule Proto.Rec.RecsResponse do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field :recs, 1, repeated: true, type: Proto.Rec.CourseRec
+  field(:recs, 1, repeated: true, type: Proto.Rec.CourseRec)
 end
 
 defmodule Proto.Rec.RecService.Service do
@@ -58,13 +58,13 @@ defmodule Proto.Rec.RecService.Service do
 
   use GRPC.Service, name: "proto.rec.RecService", protoc_gen_elixir_version: "0.12.0"
 
-  rpc :GetRecsForCourse, Proto.Rec.CourseRecsRequest, Proto.Rec.RecsResponse
+  rpc(:GetRecsForCourse, Proto.Rec.CourseRecsRequest, Proto.Rec.RecsResponse)
 
-  rpc :GetRecsForUser, Proto.Rec.UserRecsRequest, Proto.Rec.RecsResponse
+  rpc(:GetRecsForUser, Proto.Rec.UserRecsRequest, Proto.Rec.RecsResponse)
 
-  rpc :AddCourse, Proto.Rec.Course, Google.Protobuf.Empty
+  rpc(:AddCourse, Proto.Rec.Course, Google.Protobuf.Empty)
 
-  rpc :GetServerStatus, Google.Protobuf.Empty, Proto.Rec.ServerStatus
+  rpc(:GetServerStatus, Google.Protobuf.Empty, Proto.Rec.ServerStatus)
 end
 
 defmodule Proto.Rec.RecService.Stub do

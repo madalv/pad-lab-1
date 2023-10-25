@@ -1,3 +1,12 @@
+defmodule Proto.Course.EnrollRequest do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:user_id, 1, type: :string, json_name: "userId")
+  field(:course_id, 2, type: :string, json_name: "courseId")
+end
+
 defmodule Proto.Course.ServerStatus do
   @moduledoc false
 
@@ -148,6 +157,8 @@ defmodule Proto.Course.CourseService.Service do
   rpc(:GetCourseIdsForUser, Proto.Course.UserId, Proto.Course.CourseIds)
 
   rpc(:GetServerStatus, Google.Protobuf.Empty, Proto.Course.ServerStatus)
+
+  rpc(:EnrollUser, Proto.Course.EnrollRequest, Google.Protobuf.Empty)
 end
 
 defmodule Proto.Course.CourseService.Stub do

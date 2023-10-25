@@ -11,27 +11,38 @@ defmodule Gateway.Router do
   plug(:match)
   plug(:dispatch)
 
-  # TODO add separate handler for course
-  # TODO validate dtos before sending to services
-  # TODO add rate limiter
+  get "/courses" do
+    uid = conn |> extract_user_id()
 
-  # TODO create chapter
+    case Hammer.check_rate("#{uid}", 2000, 2) do
+      {:deny, limit} ->
+        Logger.info("DENY request for user #{uid}; limit: #{limit}")
+        conn |> send_resp(429, "too many requests")
 
-  # TODO create course
-  post "/courses" do
+      {:allow, _count} ->
+        {page, _} = extract_query_param("page", conn) |> Integer.parse()
+        {limit, _} = extract_query_param("limit", conn) |> Integer.parse()
+        reply = Course.Client.get_courses(page, limit)
+
+        case reply do
+          {:ok, recs} ->
+            send_encoded_json(recs, conn)
+
+          {:error, %GRPC.RPCError{status: 4, message: _msg}} ->
+            conn
+            |> put_resp_header("Connection", "close")
+            |> send_resp(408, "request timeout")
+
+          error ->
+            Logger.error(inspect(error))
+            send_resp(conn, 500, "failed to get courses list")
+        end
+    end
   end
 
-  # TODO get courses, paginated
-
-  # TODO get chapter
-
-  get "/courses/:id" do
+  get "/chapters/:id" do
     # assume request has passed auth middleware and it has decoded this user id from a token
-    uid =
-      case Plug.Conn.get_req_header(conn, "user-id") do
-        [] -> "bruh"
-        uid -> uid
-      end
+    uid = conn |> extract_user_id()
 
     # rate limit request
     case Hammer.check_rate("#{uid}", 2000, 2) do
@@ -40,23 +51,155 @@ defmodule Gateway.Router do
         conn |> send_resp(429, "too many requests")
 
       {:allow, _count} ->
-        # get reply
+        reply = Course.Client.get_chapter(id)
+
+        # check reply
+        case reply do
+          {:ok, course} ->
+            send_encoded_json(course, conn)
+
+          {:error, %GRPC.RPCError{status: 4, message: _msg}} ->
+            conn
+            |> put_resp_header("Connection", "close")
+            |> send_resp(408, "request timeout")
+
+          error ->
+            Logger.error(inspect(error))
+            send_resp(conn, 500, "failed to get chapter")
+        end
+    end
+  end
+
+  post "/chapters" do
+    # assume request has passed auth middleware and it has decoded this user id from a token
+    uid = conn |> extract_user_id()
+
+    case Hammer.check_rate("#{uid}", 2000, 2) do
+      {:deny, limit} ->
+        Logger.info("DENY request for user #{uid}; limit: #{limit}")
+        conn |> send_resp(429, "too many requests")
+
+      {:allow, _count} ->
+        res =
+          conn.params
+          |> Nestru.decode_from_map(Chapter.Dto.CreateChapter)
+
+        case res do
+          {:ok, dto} ->
+            reply = Course.Client.create_chapter(dto)
+
+            case reply do
+              {:ok, id} ->
+                send_encoded_json(id, conn)
+
+              {:error, %GRPC.RPCError{status: 4, message: _msg}} ->
+                conn
+                |> put_resp_header("Connection", "close")
+                |> send_resp(408, "request timeout")
+
+              error ->
+                Logger.error(inspect(error))
+                send_resp(conn, 500, "failed to create chapter")
+            end
+
+          {:error, %{message: msg}} ->
+            conn
+            |> put_resp_content_type("text/plain")
+            |> send_resp(400, msg)
+        end
+    end
+  end
+
+  post "/courses/:id/enroll" do
+    # assume request has passed auth middleware and it has decoded this user id from a token
+    uid = conn |> extract_user_id()
+
+    case Hammer.check_rate("#{uid}", 2000, 2) do
+      {:deny, limit} ->
+        Logger.info("DENY request for user #{uid}; limit: #{limit}")
+        conn |> send_resp(429, "too many requests")
+
+      {:allow, _count} ->
+        reply = Course.Client.enroll_user(uid, id)
+
+        case reply do
+          {:ok, _} ->
+            send_resp(conn, 200, "user enrolled")
+
+          {:error, %GRPC.RPCError{status: 4, message: _msg}} ->
+            conn
+            |> put_resp_header("Connection", "close")
+            |> send_resp(408, "request timeout")
+
+          error ->
+            Logger.error(inspect(error))
+            send_resp(conn, 500, "failed to enroll user")
+        end
+
+      {:error, %{message: msg}} ->
+        conn
+        |> put_resp_content_type("text/plain")
+        |> send_resp(400, msg)
+    end
+  end
+
+  post "/courses" do
+    # assume request has passed auth middleware and it has decoded this user id from a token
+    uid = conn |> extract_user_id()
+
+    case Hammer.check_rate("#{uid}", 2000, 2) do
+      {:deny, limit} ->
+        Logger.info("DENY request for user #{uid}; limit: #{limit}")
+        conn |> send_resp(429, "too many requests")
+
+      {:allow, _count} ->
+        res =
+          conn.params
+          |> Nestru.decode_from_map(Course.Dto.CreateCourse)
+
+        case res do
+          {:ok, dto} ->
+            reply = Course.Client.create_course(dto)
+
+            case reply do
+              {:ok, id} ->
+                send_encoded_json(id, conn)
+
+              {:error, %GRPC.RPCError{status: 4, message: _msg}} ->
+                conn
+                |> put_resp_header("Connection", "close")
+                |> send_resp(408, "request timeout")
+
+              error ->
+                Logger.error(inspect(error))
+                send_resp(conn, 500, "failed to create course")
+            end
+
+          {:error, %{message: msg}} ->
+            conn
+            |> put_resp_content_type("text/plain")
+            |> send_resp(400, msg)
+        end
+    end
+  end
+
+  get "/courses/:id" do
+    # assume request has passed auth middleware and it has decoded this user id from a token
+    uid = conn |> extract_user_id()
+
+    # rate limit request
+    case Hammer.check_rate("#{uid}", 2000, 2) do
+      {:deny, limit} ->
+        Logger.info("DENY request for user #{uid}; limit: #{limit}")
+        conn |> send_resp(429, "too many requests")
+
+      {:allow, _count} ->
         reply = Course.Client.get_course(id)
 
         # check reply
         case reply do
           {:ok, course} ->
-            encoded = Protobuf.JSON.encode(course)
-
-            case encoded do
-              {:ok, json} ->
-                conn
-                |> put_resp_content_type("application/json")
-                |> send_resp(200, json)
-
-              {:error, _} ->
-                send_resp(conn, 500, "failed to encode response to json")
-            end
+            send_encoded_json(course, conn)
 
           {:error, %GRPC.RPCError{status: 4, message: _msg}} ->
             conn
@@ -71,80 +214,42 @@ defmodule Gateway.Router do
   end
 
   get "/courses/:id/recommendations" do
-    # extract recs nr from query
-    recs_nr =
-      case Map.get(conn.query_params, "recs_nr") do
-        nil ->
-          conn
-          |> put_resp_content_type("text/plain")
-          |> send_resp(400, "missing recs_nr query parameter")
+    uid = conn |> extract_user_id()
 
-        nr ->
-          {val, _} = Integer.parse(nr)
-          val
-      end
+    case Hammer.check_rate("#{uid}", 2000, 2) do
+      {:deny, limit} ->
+        Logger.info("DENY request for user #{uid}; limit: #{limit}")
+        conn |> send_resp(429, "too many requests")
 
-    reply = Rec.Client.get_recs_for_course(id, recs_nr)
+      {:allow, _count} ->
+        {recs_nr, _} = extract_query_param("recs_nr", conn) |> Integer.parse()
+        reply = Rec.Client.get_recs_for_course(id, recs_nr)
 
-    case reply do
-      {:ok, recs} ->
-        encoded = Protobuf.JSON.encode(recs)
+        case reply do
+          {:ok, recs} ->
+            send_encoded_json(recs, conn)
 
-        case encoded do
-          {:ok, json} ->
+          {:error, %GRPC.RPCError{status: 4, message: _msg}} ->
             conn
-            |> put_resp_content_type("application/json")
-            |> send_resp(200, json)
+            |> put_resp_header("Connection", "close")
+            |> send_resp(408, "request timeout")
 
-          {:error, _} ->
-            send_resp(conn, 500, "failed to encode response to json")
+          error ->
+            Logger.error(inspect(error))
+            send_resp(conn, 500, "failed to get recs")
         end
-
-      {:error, %GRPC.RPCError{status: 4, message: _msg}} ->
-        conn
-        |> put_resp_header("Connection", "close")
-        |> send_resp(408, "Request timeout")
-
-      error ->
-        Logger.error(inspect(error))
-        send_resp(conn, 500, "failed to get recs")
     end
   end
 
   get "/users/:id/recommendations" do
     # extract recs nr from query
-    recs_nr =
-      case Map.get(conn.query_params, "recs_nr") do
-        nil ->
-          conn
-          |> put_resp_content_type("text/plain")
-          |> send_resp(400, "missing recs_nr query parameter")
-
-        nr ->
-          {val, _} = Integer.parse(nr)
-          val
-      end
+    {recs_nr, _} = extract_query_param("recs_nr", conn) |> Integer.parse()
 
     reply = Rec.Client.get_recs_for_user(id, recs_nr)
 
     case reply do
       {:ok, recs} ->
-        encoded = Protobuf.JSON.encode(recs)
-
-        case encoded do
-          {:ok, json} ->
-            conn
-            |> put_resp_content_type("application/json")
-            |> send_resp(200, json)
-
-          {:error, %GRPC.RPCError{message: "timeout when waiting for server", status: _}} ->
-            conn
-            |> put_resp_header("Connection", "close")
-            |> send_resp(408, "Request timeout")
-
-          {:error, _} ->
-            send_resp(conn, 500, "failed to encode response to json")
-        end
+        send_encoded_json(recs, conn)
 
       {:error, %GRPC.RPCError{status: 4, message: _msg}} ->
         conn
@@ -164,5 +269,40 @@ defmodule Gateway.Router do
   get _ do
     Logger.debug("Required path /#{conn.path_info} not found!")
     send_resp(conn, 404, "Oops... Nothing here...")
+  end
+
+  ### PRIVATE METHODS ###
+
+  defp extract_user_id(conn) do
+    case Plug.Conn.get_req_header(conn, "user-id") do
+      [] -> "bruh"
+      uid -> Enum.at(uid, 0)
+    end
+  end
+
+  defp send_encoded_json(pb, conn) do
+    encoded = Protobuf.JSON.encode(pb)
+
+    case encoded do
+      {:ok, json} ->
+        conn
+        |> put_resp_content_type("application/json")
+        |> send_resp(200, json)
+
+      {:error, _} ->
+        send_resp(conn, 500, "failed to encode response to json")
+    end
+  end
+
+  defp extract_query_param(param, conn) do
+    case Map.get(conn.query_params, param) do
+      nil ->
+        conn
+        |> put_resp_content_type("text/plain")
+        |> send_resp(400, "missing #{param} query parameter")
+
+      val ->
+        val
+    end
   end
 end

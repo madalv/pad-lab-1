@@ -30,12 +30,143 @@ defmodule Course.Client do
     GenServer.call(__MODULE__, {:get_chapter, id})
   end
 
+  def create_course(create_course_dto) do
+    GenServer.call(__MODULE__, {:create_course, create_course_dto})
+  end
+
+  def create_chapter(create_chapter_dto) do
+    GenServer.call(__MODULE__, {:create_chapter, create_chapter_dto})
+  end
+
+  def get_courses(page, limit) do
+    GenServer.call(__MODULE__, {:get_courses, page, limit})
+  end
+
+  def enroll_user(user_id, course_id) do
+    GenServer.call(__MODULE__, {:enroll_user, user_id, course_id})
+  end
+
   #### SERVER METHODS ####
+
+  def handle_call({:enroll_user, user_id, course_id}, _from, state) do
+    if state[:is_closed] do
+      channel = state[:channel]
+
+      request = %Proto.Course.EnrollRequest{
+        user_id: user_id,
+        course_id: course_id
+      }
+
+      resp =
+        channel
+        |> Proto.Course.CourseService.Stub.enroll_user(request, timeout: state[:timeout])
+
+      cnt = state[:error_cnt]
+
+      case resp do
+        {:error, _} ->
+          {:reply, resp, %{state | error_cnt: cnt + 1}}
+
+        _ ->
+          {:reply, resp, state}
+      end
+    else
+      resp = {:error, "circuit breaker for course svc open, wait #{state[:recovery_delay]} ms"}
+      {:reply, resp, state}
+    end
+  end
+
+  def handle_call({:create_chapter, dto}, _from, state) do
+    if state[:is_closed] do
+      channel = state[:channel]
+
+      request = %Proto.Course.CreateChapterRequest{
+        course_id: dto.course_id,
+        title: dto.title,
+        body: dto.body
+      }
+
+      resp =
+        channel
+        |> Proto.Course.CourseService.Stub.create_chapter(request, timeout: state[:timeout])
+
+      cnt = state[:error_cnt]
+
+      case resp do
+        {:error, _} ->
+          {:reply, resp, %{state | error_cnt: cnt + 1}}
+
+        _ ->
+          {:reply, resp, state}
+      end
+    else
+      resp = {:error, "circuit breaker for course svc open, wait #{state[:recovery_delay]} ms"}
+      {:reply, resp, state}
+    end
+  end
+
+  def handle_call({:create_course, dto}, _from, state) do
+    if state[:is_closed] do
+      channel = state[:channel]
+
+      request = %Proto.Course.CreateCourseRequest{
+        author_id: dto.author_id,
+        title: dto.title,
+        description: dto.description,
+        category_ids: dto.category_ids
+      }
+
+      resp =
+        channel
+        |> Proto.Course.CourseService.Stub.create_course(request, timeout: state[:timeout])
+
+      cnt = state[:error_cnt]
+
+      case resp do
+        {:error, _} ->
+          {:reply, resp, %{state | error_cnt: cnt + 1}}
+
+        _ ->
+          {:reply, resp, state}
+      end
+    else
+      resp = {:error, "circuit breaker for course svc open, wait #{state[:recovery_delay]} ms"}
+      {:reply, resp, state}
+    end
+  end
+
+  def handle_call({:get_courses, page, limit}, _from, state) do
+    if state[:is_closed] do
+      channel = state[:channel]
+
+      request = %Proto.Course.PaginationQuery{
+        page: page,
+        limit: limit
+      }
+
+      resp =
+        channel |> Proto.Course.CourseService.Stub.get_courses(request, timeout: state[:timeout])
+
+      cnt = state[:error_cnt]
+
+      case resp do
+        {:error, _} ->
+          {:reply, resp, %{state | error_cnt: cnt + 1}}
+
+        _ ->
+          {:reply, resp, state}
+      end
+    else
+      resp = {:error, "circuit breaker for course svc open, wait #{state[:recovery_delay]} ms"}
+      {:reply, resp, state}
+    end
+  end
 
   def handle_call({:get_course, id}, _from, state) do
     if state[:is_closed] do
       channel = state[:channel]
       request = %Proto.Course.CourseId{id: id}
+
       resp =
         channel |> Proto.Course.CourseService.Stub.get_course(request, timeout: state[:timeout])
 
@@ -58,6 +189,7 @@ defmodule Course.Client do
     if state[:is_closed] do
       channel = state[:channel]
       request = %Proto.Course.ChapterId{id: id}
+
       resp =
         channel |> Proto.Course.CourseService.Stub.get_chapter(request, timeout: state[:timeout])
 
@@ -74,14 +206,13 @@ defmodule Course.Client do
       resp = {:error, "circuit breaker for course svc open, wait #{state[:recovery_delay]} ms"}
       {:reply, resp, state}
     end
-
   end
 
   #### CIRCUIT BREAKER METHODS ####
 
   def handle_info(:check_errors, state) do
     if state[:error_cnt] > state[:error_threshold] do
-      Logger.warn("Error threshold reached, circuit opened for course client")
+      Logger.warning("Error threshold reached, circuit opened for course client")
       :timer.send_after(state[:recovery_delay], self(), :close_circuit)
       {:noreply, %{state | is_closed: false}}
     else

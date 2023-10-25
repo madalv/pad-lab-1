@@ -35,7 +35,7 @@ defmodule Gateway do
       },
       %{
         id: Rec.Client,
-        start: {Rec.Client, :start_link, [rec_channel]}
+        start: {Rec.Client, :start_link, [{rec_channel, 2000}]}
       }
     ]
 

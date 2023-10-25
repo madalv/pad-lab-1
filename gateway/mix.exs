@@ -29,7 +29,7 @@ defmodule Gateway.MixProject do
       {:google_protos, "~> 0.1"},
       {:hammer, "~> 6.1"},
       {:dotenvy, "~> 0.8.0"},
-      {:ex_break, "~> 0.0.9"}
+      {:nestru, "~> 0.3.3"}
     ]
   end
 end

@@ -1,0 +1,258 @@
+{
+	"info": {
+		"_postman_id": "cfaf3931-a544-46a8-844b-aecdebeada74",
+		"name": "gateway",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "23354646"
+	},
+	"item": [
+		{
+			"name": "Chapters",
+			"item": [
+				{
+					"name": "Create Chapter",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/chapters/",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"chapters",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Chapter By Id",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Courses",
+			"item": [
+				{
+					"name": "Get Course By Id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/courses/:id",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"courses",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "48c93bab-c420-438f-bdc2-bd18d682d62b"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Course",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "user-id",
+								"value": "xxx",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"author_id\": \"Bruh\",\n    \"title\": \"Cddsfddf\",\n    \"description\": \"dddfdf\",\n    \"category_ids\": [\"1\", \"2\"]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/courses/",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"courses",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Courses Paginated",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Enroll (Authenticated) User In Course",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/courses/:id/enroll",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"courses",
+								":id",
+								"enroll"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Recs",
+			"item": [
+				{
+					"name": "Get Recs for User",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/courses/:id/recommendations?recs_nr=14",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"courses",
+								":id",
+								"recommendations"
+							],
+							"query": [
+								{
+									"key": "recs_nr",
+									"value": "14"
+								}
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "876a157d-aee0-4664-bd42-6e99fd64d767"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Recs For Course",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/courses/:id/recommendations?recs_nr=4",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"courses",
+								":id",
+								"recommendations"
+							],
+							"query": [
+								{
+									"key": "recs_nr",
+									"value": "4"
+								}
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1354343"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Status",
+			"item": [
+				{
+					"name": "Gateway Status",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Course Svc Status",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/course-status",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"course-status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Rec Svc Status",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/rec-status",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"rec-status"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

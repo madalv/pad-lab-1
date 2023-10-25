@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: rec-svc
+  name: rec-depl
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: rec-svc
+      app: rec
   template:
     metadata:
       labels:
-        app: rec-svc
+        app: rec
     spec:
       containers:
-      - name: rec-svc
+      - name: rec
         image: madalv/rec-svc:latest
-        imagePullPolicy: Never
+        # imagePullPolicy: Never
         ports:
         - containerPort: 50051
 ---
@@ -25,7 +25,7 @@ metadata:
   name: rec-svc
 spec:
   selector:
-    app: rec-svc
+    app: rec
   ports:
   - name: rec-svc-port-50051
     protocol: TCP
@@ -51,7 +51,7 @@ spec:
       containers:
       - name: course-svc
         image: madalv/course-svc:latest
-        imagePullPolicy: Never
+        # imagePullPolicy: Never
         ports:
         - containerPort: 50052
 ---
@@ -88,7 +88,7 @@ spec:
       containers:
       - name: gateway
         image: madalv/gateway:latest
-        imagePullPolicy: Never
+        # imagePullPolicy: Never
         ports:
         - containerPort: 8080
 ---

@@ -2,6 +2,29 @@
 > **Performed by:** Vlada Magal, group FAF-203 \
 > **Verified by:** asist. univ. Maxim Voloșenco
 
+## How to Run this BS
+
+### Docker
+In the root folder, run:
+```bash
+docker compose up --build
+```
+
+Note: might need to run twice.
+
+### Kubernetes
+In the root folder, run:
+```
+kubectl apply -f data.yaml
+kubectl apply -f services.yaml
+```
+
+Note: make sure you've got a Kubernetes cluster running.
+
+### Make Requests
+
+Import the Postman collection (json file in root folder) given and have fun. I guess.
+
 ## Checkpoint 1
 
 ### Topic
@@ -32,8 +55,8 @@ A simple architecture diagram:
 ### Tech Stack and Communication Patterns
 
 * Recommendation Service
-  * Language: Go
-  * Frameworks: gRPC, Gorm
+  * Language: Python
+  * Frameworks: gRPC, sqlAlchemy, pandas
   * Communication: synchronous communication via RPC
   * Database: Postgres
 * Course Service
@@ -132,7 +155,6 @@ HTTP Gateway endpoints:
     }
     ```
   * POST `:id/enroll` -- enrolls authenticated user into specified course 
-  * DELETE `:id/enroll` -- deletes enrollment for the specified course
 
 * Chapter `api/v1/chapters`
   * GET `/:id` -- get course chapter
@@ -159,20 +181,6 @@ HTTP Gateway endpoints:
   * DELETE `/:id` -- deletes course chapter
 
 * User `/api/v1/users`
-  * GET `/:id/courses` -- gets courses for user
-    * Response body:
-    ```json
-    [{
-      "id": "60ba873d-721b-436e-a687-06e8c6298623",
-      "author_id": "60ba873d-721b-436e-a687-06e8c6298623",
-      "title": "Very Nice Course",
-      "description": "This is a very nice course.",
-      "created_at": "2023-09-12T17:34:36.261285961Z",
-      "updated_at": "2023-09-12T17:34:36.261285961Z",
-      "categories": [],
-      "chapters": []
-    }, ...]
-    ```
   * GET `/:id/recommendations?recs_nr={nr}` -- gets an amount of recommendations for a user based on the courses the user is enrolled in
     * Response body:
     ```json

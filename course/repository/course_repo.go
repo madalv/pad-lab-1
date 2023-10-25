@@ -66,3 +66,7 @@ func (r *CourseRepository) GetCourseIDsForUser(userID string) []string {
 
 	return courseIDs
 }
+
+func (r *CourseRepository) CreateEnrollment(enr *model.Enrollment) error {
+	return r.db.Create(enr).Error
+}

@@ -13,6 +13,12 @@ service CourseService {
   rpc CreateChapter(CreateChapterRequest) returns (ChapterId);
   rpc GetCourseIdsForUser(UserId) returns (CourseIds);
   rpc GetServerStatus(google.protobuf.Empty) returns (ServerStatus);
+  rpc EnrollUser(EnrollRequest) returns (google.protobuf.Empty);
+}
+
+message EnrollRequest {
+  string user_id = 1;
+  string course_id = 2;
 }
 
 message ServerStatus {

@@ -10,6 +10,7 @@ import (
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/gookit/slog"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -22,6 +23,7 @@ type courseService interface {
 	Create(course model.Course, categoryIDs []string) (string, error)
 	GetAll(pagination util.Pagination) []model.Course
 	GetCourseIDsForUser(userID string) []string
+	EnrollUser(enr model.Enrollment) error
 }
 
 type chapterService interface {
@@ -53,6 +55,20 @@ func NewGRPCServer(courseSvc courseService, chapterSvc chapterService) (*grpc.Se
 	})
 
 	return s, nil
+}
+
+func (srv *grpcServer) EnrollUser(_ context.Context, req *pb.EnrollRequest) (*emptypb.Empty, error) {
+	enr := model.Enrollment{
+		UserID:   req.UserId,
+		CourseID: req.CourseId,
+	}
+
+	err := srv.courseSvc.EnrollUser(enr)
+	if err != nil {
+		return nil, err
+	}
+
+	return &emptypb.Empty{}, nil
 }
 
 // CreateChapter implements pb.CourseServiceServer.

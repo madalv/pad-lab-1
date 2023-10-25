@@ -194,21 +194,37 @@ defmodule Gateway.Router do
         conn |> send_resp(429, "too many requests")
 
       {:allow, _count} ->
-        reply = Course.Client.get_course(id)
+        # check cache first
+        case Cache.get_value(id) do
+          {:ok, nil} ->
+            reply = Course.Client.get_course(id)
 
-        # check reply
-        case reply do
-          {:ok, course} ->
-            send_encoded_json(course, conn)
+            # check reply
+            case reply do
+              {:ok, course} ->
+                case Protobuf.JSON.encode(course) do
+                  {:ok, json} ->
+                    Cache.set_value(id, json)
 
-          {:error, %GRPC.RPCError{status: 4, message: _msg}} ->
+                    conn
+                    |> put_resp_content_type("application/json")
+                    |> send_resp(200, json)
+                end
+
+              {:error, %GRPC.RPCError{status: 4, message: _msg}} ->
+                conn
+                |> put_resp_header("Connection", "close")
+                |> send_resp(408, "request timeout")
+
+              error ->
+                Logger.error(inspect(error))
+                send_resp(conn, 500, "failed to get course")
+            end
+
+          {:ok, json} ->
             conn
-            |> put_resp_header("Connection", "close")
-            |> send_resp(408, "request timeout")
-
-          error ->
-            Logger.error(inspect(error))
-            send_resp(conn, 500, "failed to get course")
+            |> put_resp_content_type("application/json")
+            |> send_resp(200, json)
         end
     end
   end
@@ -223,20 +239,40 @@ defmodule Gateway.Router do
 
       {:allow, _count} ->
         {recs_nr, _} = extract_query_param("recs_nr", conn) |> Integer.parse()
-        reply = Rec.Client.get_recs_for_course(id, recs_nr)
 
-        case reply do
-          {:ok, recs} ->
-            send_encoded_json(recs, conn)
+        # check cache first
+        case Cache.get_value("#{recs_nr}_#{id}") do
+          {:ok, nil} ->
+            reply = Rec.Client.get_recs_for_course(id, recs_nr)
 
-          {:error, %GRPC.RPCError{status: 4, message: _msg}} ->
+            case reply do
+              {:ok, recs} ->
+                case Protobuf.JSON.encode(recs) do
+                  {:ok, json} ->
+                    Cache.set_value("#{recs_nr}_#{id}", json)
+
+                    conn
+                    |> put_resp_content_type("application/json")
+                    |> send_resp(200, json)
+
+                  {:error, _} ->
+                    send_resp(conn, 500, "failed to encode response to json")
+                end
+
+              {:error, %GRPC.RPCError{status: 4, message: _msg}} ->
+                conn
+                |> put_resp_header("Connection", "close")
+                |> send_resp(408, "request timeout")
+
+              error ->
+                Logger.error(inspect(error))
+                send_resp(conn, 500, "failed to get recs")
+            end
+
+          {:ok, json} ->
             conn
-            |> put_resp_header("Connection", "close")
-            |> send_resp(408, "request timeout")
-
-          error ->
-            Logger.error(inspect(error))
-            send_resp(conn, 500, "failed to get recs")
+            |> put_resp_content_type("application/json")
+            |> send_resp(200, json)
         end
     end
   end

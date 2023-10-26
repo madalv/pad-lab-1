@@ -30,7 +30,6 @@ func main() {
 	// init db
 	db := storage.NewDatabase(os.Getenv("POSTGRES_DSN"))
 
-	// TODO get address out of config
 	conn, err := grpc.Dial(os.Getenv("REC_SVC_ADDRESS"), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		slog.Fatalf("Failed to connect to Rec Service: %s", err)
@@ -50,7 +49,6 @@ func main() {
 	courseSvc := service.NewCourseService(courseRepo, recRepo)
 	chapterSvc := service.NewChapterService(chapterRepo, courseRepo)
 
-	// TODO get address out of config
 	listener, err := net.Listen("tcp", os.Getenv("GRPC_ADDRESS"))
 	if err != nil {
 		slog.Fatal(err)

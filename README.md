@@ -21,6 +21,21 @@ kubectl apply -f services.yaml
 
 Note: make sure you've got a Kubernetes cluster running.
 
+#### Kubernetes Note
+
+Linkerd was used after noticing that setting up a ClusterIP wasn't enough to load balance gRPC requests equally to all replicas (check out this [arcticle](https://kubernetes.io/blog/2018/11/07/grpc-load-balancing-on-kubernetes-without-tears/)).
+
+To inject the service mesh into the cluster, do the following:
+
+1. Install [Linkerd](https://linkerd.io/2.14/getting-started/).
+2. In the root folder, run:
+```bash
+kubectl apply -f data.yaml
+linkerd inject services.yaml | kubectl apply -f -
+```
+
+The data sources do not need to have proxies since there's only 1 instance of each.
+
 ### Make Requests
 
 Import the Postman collection (json file in root folder) given and have fun. I guess.

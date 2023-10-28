@@ -35,6 +35,9 @@ class RecService:
     """
     Returns a unique list of tuples of the form [(title, id), (title, id), ...]
     """
+
+  
+
     logging.info(f'Getting recs for user {user_id}')
     list = self.course_repo.fetch_user_courses(user_id)
     # logging.debug(list)
@@ -61,5 +64,6 @@ class RecService:
     """
     Returns a list of tuples of the form [(title, id), (title, id), ...]
     """
+    self.rec_sys = rs.RecSystem(self.course_repo.fetch_courses())
     logging.info(f'Getting recs for course {course_id}')
     return self.rec_sys.get_recs(course_id, nr)

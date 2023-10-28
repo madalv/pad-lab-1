@@ -26,7 +26,7 @@ defmodule Cache do
 
   def handle_call({:set, key, val}, _from, conn) do
     repl = Redix.command(:redis, ["SETEX", key, 60, val])
-    # Logger.debug(inspect(repl))
+    Logger.debug(inspect(repl))
     {:reply, repl, conn}
   end
 end

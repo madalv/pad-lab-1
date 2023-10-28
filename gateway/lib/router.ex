@@ -14,7 +14,7 @@ defmodule Gateway.Router do
   get "/courses" do
     uid = conn |> extract_user_id()
 
-    case Hammer.check_rate("#{uid}", 2000, 2) do
+    case Hammer.check_rate("#{uid}", 10_000, 5) do
       {:deny, limit} ->
         Logger.info("DENY request for user #{uid}; limit: #{limit}")
         conn |> send_resp(429, "too many requests")
@@ -45,7 +45,7 @@ defmodule Gateway.Router do
     uid = conn |> extract_user_id()
 
     # rate limit request
-    case Hammer.check_rate("#{uid}", 2000, 2) do
+    case Hammer.check_rate("#{uid}", 10_000, 5) do
       {:deny, limit} ->
         Logger.info("DENY request for user #{uid}; limit: #{limit}")
         conn |> send_resp(429, "too many requests")
@@ -74,7 +74,7 @@ defmodule Gateway.Router do
     # assume request has passed auth middleware and it has decoded this user id from a token
     uid = conn |> extract_user_id()
 
-    case Hammer.check_rate("#{uid}", 2000, 2) do
+    case Hammer.check_rate("#{uid}", 10_000, 5) do
       {:deny, limit} ->
         Logger.info("DENY request for user #{uid}; limit: #{limit}")
         conn |> send_resp(429, "too many requests")
@@ -114,7 +114,7 @@ defmodule Gateway.Router do
     # assume request has passed auth middleware and it has decoded this user id from a token
     uid = conn |> extract_user_id()
 
-    case Hammer.check_rate("#{uid}", 2000, 2) do
+    case Hammer.check_rate("#{uid}", 10_000, 5) do
       {:deny, limit} ->
         Logger.info("DENY request for user #{uid}; limit: #{limit}")
         conn |> send_resp(429, "too many requests")
@@ -124,7 +124,7 @@ defmodule Gateway.Router do
 
         case reply do
           {:ok, _} ->
-            send_resp(conn, 200, "user enrolled")
+            send_resp(conn, 500, "user enrolled")
 
           {:error, %GRPC.RPCError{status: 4, message: _msg}} ->
             conn
@@ -147,7 +147,7 @@ defmodule Gateway.Router do
     # assume request has passed auth middleware and it has decoded this user id from a token
     uid = conn |> extract_user_id()
 
-    case Hammer.check_rate("#{uid}", 2000, 2) do
+    case Hammer.check_rate("#{uid}", 10_000, 5) do
       {:deny, limit} ->
         Logger.info("DENY request for user #{uid}; limit: #{limit}")
         conn |> send_resp(429, "too many requests")
@@ -188,7 +188,7 @@ defmodule Gateway.Router do
     uid = conn |> extract_user_id()
 
     # rate limit request
-    case Hammer.check_rate("#{uid}", 2000, 2) do
+    case Hammer.check_rate("#{uid}", 10_000, 5) do
       {:deny, limit} ->
         Logger.info("DENY request for user #{uid}; limit: #{limit}")
         conn |> send_resp(429, "too many requests")
@@ -224,7 +224,7 @@ defmodule Gateway.Router do
           {:ok, json} ->
             conn
             |> put_resp_content_type("application/json")
-            |> send_resp(200, json)
+            |> send_resp(500, json)
         end
     end
   end
@@ -232,7 +232,7 @@ defmodule Gateway.Router do
   get "/courses/:id/recommendations" do
     uid = conn |> extract_user_id()
 
-    case Hammer.check_rate("#{uid}", 2000, 2) do
+    case Hammer.check_rate("#{uid}", 10_000, 5) do
       {:deny, limit} ->
         Logger.info("DENY request for user #{uid}; limit: #{limit}")
         conn |> send_resp(429, "too many requests")
@@ -272,7 +272,7 @@ defmodule Gateway.Router do
           {:ok, json} ->
             conn
             |> put_resp_content_type("application/json")
-            |> send_resp(200, json)
+            |> send_resp(500, json)
         end
     end
   end
@@ -299,7 +299,7 @@ defmodule Gateway.Router do
   end
 
   get "/status" do
-    send_resp(conn, 200, "STATUS: SERVING")
+    send_resp(conn, 500, "STATUS: SERVING")
   end
 
   get _ do

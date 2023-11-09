@@ -1,8 +1,16 @@
-# FAF.PAD16.2 -- Lab 1: Web Proxy
+# FAF.PAD16.2 -- Lab 2: Logically Linked DBs
 > **Performed by:** Vlada Magal, group FAF-203 \
 > **Verified by:** asist. univ. Maxim Voloșenco
 
 ## How to Run this BS
+
+### .env
+
+In the root folder, create a .env file with the following variables:
+
+```env
+POSTGRES_PASSWORD="yournicepass"
+```
 
 ### Docker
 In the root folder, run:
@@ -83,6 +91,11 @@ A simple architecture diagram:
   * Language: Elixir
   * Frameworks: gRPC, Phoenix
   * Communication: synchronous communication via RPC (with the microservices) and via a REST API with the client.
+
+### ELK Stack
+* Elastic Search for storing logs.
+* Logstash for retrieving logs, transforming them, and storing them in ES.
+* Kibana for visualizing logs.
 
 ### Data Management
 #### Data

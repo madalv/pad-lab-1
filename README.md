@@ -1,7 +1,3 @@
-# FAF.PAD16.2 -- Lab 1: Web Proxy
-> **Performed by:** Vlada Magal, group FAF-203 \
-> **Verified by:** asist. univ. Maxim Voloșenco
-
 ## How to Run this BS
 
 ### Docker

@@ -1,7 +1,3 @@
-# FAF.PAD16.2 -- Lab 2: Logically Linked DBs
-> **Performed by:** Vlada Magal, group FAF-203 \
-> **Verified by:** asist. univ. Maxim Voloșenco
-
 ## How to Run this BS
 
 ### .env
@@ -22,9 +18,11 @@ Note: might need to run twice.
 
 ### Kubernetes
 In the root folder, run:
-```
+```bash
 kubectl apply -f data.yaml
 kubectl apply -f services.yaml
+kubectl apply -f role.yaml                                                                                                               128 ⨯
+kubectl apply -f rolebinding.yaml
 ```
 
 Note: make sure you've got a Kubernetes cluster running.
@@ -39,6 +37,8 @@ To inject the service mesh into the cluster, do the following:
 2. In the root folder, run:
 ```bash
 kubectl apply -f data.yaml
+kubectl apply -f role.yaml                                                                                                               128 ⨯
+kubectl apply -f rolebinding.yaml
 linkerd inject services.yaml | kubectl apply -f -
 ```
 

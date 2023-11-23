@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: rec
-        image: madalv/rec-svc:latest
+        image: madalv/rec-svc:1.0
         # imagePullPolicy: Never
         ports:
         - containerPort: 50051
@@ -50,7 +50,7 @@ spec:
     spec:
       containers:
       - name: course-svc
-        image: madalv/course-svc:latest
+        image: madalv/course-svc:1.0
         # imagePullPolicy: Never
         ports:
         - containerPort: 50052
@@ -87,7 +87,7 @@ spec:
     spec:
       containers:
       - name: gateway
-        image: madalv/gateway:latest
+        image: madalv/gateway:1.2.2
         # imagePullPolicy: Never
         ports:
         - containerPort: 8080

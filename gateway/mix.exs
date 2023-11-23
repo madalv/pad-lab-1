@@ -30,6 +30,7 @@ defmodule Gateway.MixProject do
       {:hammer, "~> 6.1"},
       {:dotenvy, "~> 0.8.0"},
       {:nestru, "~> 0.3.3"},
+      {:nebulex_redis_adapter, "~> 2.3"},
       {:redix, "~> 1.1"}
     ]
   end

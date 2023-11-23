@@ -28,10 +28,11 @@ defmodule Gateway do
     {:ok, rec_channel} = GRPC.Stub.connect(env!("REC_SVC_ADDRESS"))
     Logger.info("Successfully connected to Rec Svc")
 
-    {:ok, redis_conn} = Redix.start_link(env!("REDIS_URL"), name: :redis)
-    Logger.info("Successfully connected to Redis")
+    # {:ok, redis_conn} = Redix.start_link(env!("REDIS_URL"), name: :redis)
+    # Logger.info("Successfully connected to Redis")
 
     children = [
+      RedisCache,
       {Plug.Cowboy, scheme: :http, plug: Gateway.Router, options: [port: 8080]},
       %{
         id: Rec.Client,
@@ -43,8 +44,8 @@ defmodule Gateway do
       },
       %{
         id: Cache,
-        start: {Cache, :start_link, [redis_conn]}
-      }
+        start: {Cache, :start_link, ["bruh"]}
+      },
     ]
 
     opts = [strategy: :one_for_one, name: Gateway.Supervisor]

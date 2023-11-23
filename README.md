@@ -10,9 +10,17 @@ Note: might need to run twice.
 
 ### Kubernetes
 In the root folder, run:
+<<<<<<< Updated upstream
 ```
 kubectl apply -f data.yaml
 kubectl apply -f services.yaml
+=======
+```bash
+kubectl apply -f k8s/data.yaml
+kubectl apply -f k8s/services.yaml
+kubectl apply -f k8s/role.yaml 
+kubectl apply -f k8s/rolebinding.yaml
+>>>>>>> Stashed changes
 ```
 
 Note: make sure you've got a Kubernetes cluster running.
@@ -27,6 +35,11 @@ To inject the service mesh into the cluster, do the following:
 2. In the root folder, run:
 ```bash
 kubectl apply -f data.yaml
+<<<<<<< Updated upstream
+=======
+kubectl apply -f role.yaml
+kubectl apply -f rolebinding.yaml
+>>>>>>> Stashed changes
 linkerd inject services.yaml | kubectl apply -f -
 ```
 

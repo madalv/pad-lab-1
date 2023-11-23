@@ -1,3 +1,9 @@
+defmodule RedisCache do
+  use Nebulex.Cache,
+    otp_app: :gateway,
+    adapter: NebulexRedisAdapter
+end
+
 defmodule Cache do
   use GenServer
   require Logger
@@ -19,13 +25,15 @@ defmodule Cache do
   end
 
   def handle_call({:get, key}, _from, conn) do
-    repl = Redix.command(:redis, ["GET", key])
+    # repl = Redix.command(:redis, ["GET", key])
+    repl = RedisCache.get(key)
     Logger.debug(inspect(repl))
     {:reply, repl, conn}
   end
 
   def handle_call({:set, key, val}, _from, conn) do
-    repl = Redix.command(:redis, ["SETEX", key, 60, val])
+    # repl = Redix.command(:redis, ["SETEX", key, 60, val])
+    repl = RedisCache.put(key, val, ttl: :timer.minutes(2))
     Logger.debug(inspect(repl))
     {:reply, repl, conn}
   end

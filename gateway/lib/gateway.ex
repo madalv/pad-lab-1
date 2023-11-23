@@ -31,6 +31,13 @@ defmodule Gateway do
     {:ok, redis_conn} = Redix.start_link(env!("REDIS_URL"), name: :redis)
     Logger.info("Successfully connected to Redis")
 
+    {:ok, conn} = K8s.Conn.from_service_account(insecure_skip_tls_verify: true)
+    Logger.info("Successfully Init k8s Client")
+
+    operation = K8s.Client.list("v1", "Pod", namespace: "default")
+    {:ok, deployments} = K8s.Client.run(conn, operation)
+    Logger.info(inspect(deployments))
+
     children = [
       {Plug.Cowboy, scheme: :http, plug: Gateway.Router, options: [port: 8080]},
       %{

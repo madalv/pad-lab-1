@@ -19,10 +19,10 @@ Note: might need to run twice.
 ### Kubernetes
 In the root folder, run:
 ```bash
-kubectl apply -f data.yaml
-kubectl apply -f services.yaml
-kubectl apply -f role.yaml                                                                                                               128 ⨯
-kubectl apply -f rolebinding.yaml
+kubectl apply -f k8s/data.yaml
+kubectl apply -f k8s/services.yaml
+kubectl apply -f k8s/role.yaml    
+kubectl apply -f k8s/rolebinding.yaml
 ```
 
 Note: make sure you've got a Kubernetes cluster running.

@@ -1,0 +1,12 @@
+elasticsearch:
+  replicas: 2
+  minimumMasterNodes: 2
+  antiAffinity: false
+
+kibana:
+  replicas: 1
+
+logstash:
+  replicas: 1
+  persistence:
+    enabled: false

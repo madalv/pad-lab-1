@@ -7,7 +7,7 @@ metadata:
   name: redis-cluster
   labels:
     app: redis-cluster
-    environment: prod
+    environment: dev
 spec:
   publishNotReadyAddresses: true
   ports:
@@ -18,7 +18,7 @@ spec:
     targetPort: 16379
     name: gossip
   clusterIP: None
-  #type: ClusterIP
+  type: ClusterIP
   selector:
     app: redis-cluster
 ---
@@ -206,4 +206,4 @@ spec:
       accessModes: [ "ReadWriteOnce" ]
       resources:
         requests:
-          storage: 1Gi
+          storage: 500Mi

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	api "course/api/rpc"
 	"course/pb/pb_rec"
 	"course/repository"
@@ -11,6 +12,7 @@ import (
 
 	"github.com/gookit/slog"
 	"github.com/joho/godotenv"
+	"github.com/redis/go-redis/v9"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -26,6 +28,25 @@ func main() {
 	} else {
 		slog.Fatalf("Invalid mode: %s. Supported modes are 'dev' and 'prod'.\n", appMode)
 	}
+
+	opts := &redis.ClusterOptions{
+		Addrs:     []string{"redis-cluster:6379"},
+	}
+
+	rdb := redis.NewClusterClient(opts)
+
+	ctx := context.Background()
+
+	err := rdb.Set(ctx, "key", "cal", 0).Err()
+	if err != nil {
+		slog.Error(err)
+	}
+
+	val, err := rdb.Get(ctx, "key").Result()
+	if err != nil {
+		panic(err)
+	}
+	slog.Println("key", val)
 
 	// init db
 	db := storage.NewDatabase(os.Getenv("POSTGRES_DSN"))

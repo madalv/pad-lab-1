@@ -6,6 +6,8 @@ from google.protobuf import empty_pb2
 from service import rec_service as svc
 import grpc
 import logging
+from py_grpc_prometheus.prometheus_server_interceptor import PromServerInterceptor
+from prometheus_client import start_http_server
 
 class RecServer(pb2_grpc.RecServiceServicer):
 
@@ -62,7 +64,11 @@ class RecServer(pb2_grpc.RecServiceServicer):
 
 def serve(rec_svc, address):
   logging.info('Starting Rec gRPC Server')
-  server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
+  # start grpc server with interceptors for collecting prometheus metrics
+  server = grpc.server(futures.ThreadPoolExecutor(max_workers=10),
+                       interceptors=(PromServerInterceptor(enable_handling_time_histogram=True),))
+  
+  start_http_server(40051)
   pb2_grpc.add_RecServiceServicer_to_server(RecServer(rec_svc), server)
   server.add_insecure_port(address)
   server.start()

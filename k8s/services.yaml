@@ -14,15 +14,18 @@ spec:
     spec:
       containers:
       - name: rec-svc
-        image: madalv/rec-svc:1.0
+        image: madalv/rec-svc:1.2.2
         # imagePullPolicy: Never
         ports:
         - containerPort: 50051
+        - containerPort: 40051
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: rec-svc
+  labels: 
+    app: rec-svc
 spec:
   selector:
     app: rec-svc
@@ -31,6 +34,10 @@ spec:
     protocol: TCP
     port: 50051
     targetPort: 50051
+  - name: rec-svc-metrics-port
+    protocol: TCP
+    port: 40051
+    targetPort: 40051
   type: ClusterIP
   
 ---

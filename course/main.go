@@ -30,7 +30,7 @@ func main() {
 	}
 
 	opts := &redis.ClusterOptions{
-		Addrs:     []string{"redis-cluster:6379"},
+		Addrs: []string{"redis-cluster:6379"},
 	}
 
 	rdb := redis.NewClusterClient(opts)

@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: rec-depl
+  name: rec-svc
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: rec
+      app: rec-svc
   template:
     metadata:
       labels:
-        app: rec
+        app: rec-svc
     spec:
       containers:
-      - name: rec
+      - name: rec-svc
         image: madalv/rec-svc:1.0
         # imagePullPolicy: Never
         ports:
@@ -25,7 +25,7 @@ metadata:
   name: rec-svc
 spec:
   selector:
-    app: rec
+    app: rec-svc
   ports:
   - name: rec-svc-port-50051
     protocol: TCP
@@ -50,15 +50,18 @@ spec:
     spec:
       containers:
       - name: course-svc
-        image: madalv/course-svc:1.1.1
+        image: madalv/course-svc:1.2.3
         # imagePullPolicy: Never
         ports:
         - containerPort: 50052
+        - containerPort: 40052
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: course-svc
+  labels: 
+    app: course-svc
 spec:
   selector:
     app: course-svc
@@ -67,6 +70,10 @@ spec:
     protocol: TCP
     port: 50052
     targetPort: 50052
+  - name: course-svc-metrics-port
+    protocol: TCP
+    port: 40052
+    targetPort: 40052
   type: ClusterIP
 
 ---

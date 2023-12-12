@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"net/http"
 
 	"course/model"
 	"course/pb"
@@ -9,6 +10,9 @@ import (
 
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/gookit/slog"
+	grpcprom "github.com/grpc-ecosystem/go-grpc-middleware/providers/prometheus"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -42,11 +46,35 @@ func loggingInterceptor(ctx context.Context, req interface{}, info *grpc.UnarySe
 	return handler(ctx, req)
 }
 
+// newServerMetrics initializes Prometheus metrics with gRPC method interceptors
+// and sets up an HTTP endpoint for Prometheus to collect the metrics
+func newServerMetrics() *grpcprom.ServerMetrics {
+	slog.Info("Initiating server metrics...")
+	srvMetrics := grpcprom.NewServerMetrics(
+		grpcprom.WithServerHandlingTimeHistogram(
+			grpcprom.WithHistogramBuckets([]float64{0.001, 0.01, 0.1, 0.3, 0.6, 1, 3, 6, 9, 20, 30, 60, 90, 120}),
+		),
+	)
+	reg := prometheus.NewRegistry()
+	reg.MustRegister(srvMetrics)
+
+	http.Handle("/metrics", promhttp.HandlerFor(reg, promhttp.HandlerOpts{}))
+	go func() {
+		if err := http.ListenAndServe(":40052", nil); err != nil {
+			slog.Fatal(err)
+		}
+	}()
+	return srvMetrics
+}
+
 func NewGRPCServer(courseSvc courseService, chapterSvc chapterService) (*grpc.Server, error) {
 	slog.Info("Initializing gRPC Server...")
 
+	srvMetrics := newServerMetrics()
 	s := grpc.NewServer(
-		grpc.UnaryInterceptor(loggingInterceptor),
+		grpc.UnaryInterceptor(
+			srvMetrics.UnaryServerInterceptor(),
+		),
 	)
 
 	pb.RegisterCourseServiceServer(s, &grpcServer{

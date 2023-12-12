@@ -1,5 +1,13 @@
 ## How to Run this BS
 
+### .env
+
+In the root folder, create a .env file with the following variables:
+
+```env
+POSTGRES_PASSWORD="yournicepass"
+```
+
 ### Docker
 In the root folder, run:
 ```bash
@@ -10,9 +18,11 @@ Note: might need to run twice.
 
 ### Kubernetes
 In the root folder, run:
-```
+```bash
 kubectl apply -f data.yaml
 kubectl apply -f services.yaml
+kubectl apply -f role.yaml                                                                                                               128 ⨯
+kubectl apply -f rolebinding.yaml
 ```
 
 Note: make sure you've got a Kubernetes cluster running.
@@ -27,6 +37,8 @@ To inject the service mesh into the cluster, do the following:
 2. In the root folder, run:
 ```bash
 kubectl apply -f data.yaml
+kubectl apply -f role.yaml                                                                                                               128 ⨯
+kubectl apply -f rolebinding.yaml
 linkerd inject services.yaml | kubectl apply -f -
 ```
 
@@ -79,6 +91,11 @@ A simple architecture diagram:
   * Language: Elixir
   * Frameworks: gRPC, Phoenix
   * Communication: synchronous communication via RPC (with the microservices) and via a REST API with the client.
+
+### ELK Stack
+* Elastic Search for storing logs.
+* Logstash for retrieving logs, transforming them, and storing them in ES.
+* Kibana for visualizing logs.
 
 ### Data Management
 #### Data

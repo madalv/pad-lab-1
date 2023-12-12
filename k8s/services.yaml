@@ -101,7 +101,7 @@ spec:
     spec:
       containers:
       - name: gateway
-        image: madalv/gateway:1.1.2
+        image: madalv/gateway:2.1.0
         # imagePullPolicy: Never
         ports:
         - containerPort: 8080

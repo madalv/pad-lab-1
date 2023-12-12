@@ -67,7 +67,7 @@ services:
     build:
       context: ./gateway
       dockerfile: Dockerfile
-    image: madalv/gateway:1.1.2
+    image: madalv/gateway:2.1.0
     depends_on:
       - course-svc
       - rec-svc

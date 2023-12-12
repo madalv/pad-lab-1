@@ -31,6 +31,7 @@ defmodule Gateway do
     {:ok, redis_conn} = Redix.start_link(env!("REDIS_URL"), name: :redis)
     Logger.info("Successfully connected to Redis")
 
+
     children = [
       {Plug.Cowboy, scheme: :http, plug: Gateway.Router, options: [port: 8080]},
       %{
@@ -44,6 +45,10 @@ defmodule Gateway do
       %{
         id: Cache,
         start: {Cache, :start_link, [redis_conn]}
+      },
+      %{
+        id: RestartMonitor,
+        start: {RestartMonitor, :start_link, [10000]}
       }
     ]
 

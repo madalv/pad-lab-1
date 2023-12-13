@@ -46,6 +46,11 @@ class RecServer(pb2_grpc.RecServiceServicer):
     
   def AddCourse(self, request, context):
     try:
+
+      # TODO remove this!
+      if request.title == "test_saga":
+        raise ValueError("Here you go ig!")
+
       request_dict = {
       'author': request.author,
       'categories': " ".join(request.categories),

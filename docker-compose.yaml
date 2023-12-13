@@ -44,7 +44,7 @@ services:
     build:
       context: ./course
       dockerfile: Dockerfile
-    image: madalv/course-svc:1.2.3
+    image: madalv/course-svc:1.2.5
     depends_on:
       - course-db
     ports:
@@ -55,7 +55,7 @@ services:
     build:
       context: ./recommendation
       dockerfile: Dockerfile
-    image: madalv/rec-svc:1.2.2
+    image: madalv/rec-svc:1.2.3
     depends_on:
       - course-svc
       - rec-db

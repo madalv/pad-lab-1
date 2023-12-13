@@ -15,6 +15,7 @@ type courseRepo interface {
 	GetAll(pagination util.Pagination) []model.Course
 	GetCourseIDsForUser(userID string) []string
 	CreateEnrollment(enr *model.Enrollment) error
+	Delete(id string) error
 }
 
 type recRepo interface {
@@ -73,13 +74,17 @@ func (svc *CourseService) Create(course model.Course, categoryIDs []string) (str
 	}
 
 	course.Categories = categories
+	// create course locally
 	if err := svc.courseRepo.Create(&course); err != nil {
-		slog.Error(err)
+		slog.Errorf("Course could not be created, aborting: %v", err)
 		return "", err
 	}
 
+	// create course in the rec svc
 	if err := svc.recRepo.AddCourse(course); err != nil {
-		slog.Error(err)
+		slog.Errorf("Course %v creation failed in Rec svc, rolling back: %v", course.ID, err)
+		// if course could not be created in rec svc, "rollback" locally
+		svc.courseRepo.Delete(course.ID)
 		return "", err
 	}
 

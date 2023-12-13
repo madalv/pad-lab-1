@@ -35,6 +35,10 @@ func (r *CourseRepository) Create(course *model.Course) error {
 	return r.db.Create(course).Error
 }
 
+func (r *CourseRepository) Delete(id string) error {
+	return r.db.Delete(&model.Course{}, "id = ?", id).Error
+}
+
 func (r *CourseRepository) GetByIDWithChapters(id string) (model.Course, error) {
 	var course model.Course
 	err := r.db.

@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: rec-svc
-        image: madalv/rec-svc:1.2.2
+        image: madalv/rec-svc:1.2.3
         # imagePullPolicy: Never
         ports:
         - containerPort: 50051
@@ -57,7 +57,7 @@ spec:
     spec:
       containers:
       - name: course-svc
-        image: madalv/course-svc:1.2.3
+        image: madalv/course-svc:1.2.5
         # imagePullPolicy: Never
         ports:
         - containerPort: 50052

@@ -1,8 +1,8 @@
 package main
 
 import (
-	"context"
 	api "course/api/rpc"
+	"course/cache"
 	"course/pb/pb_rec"
 	"course/repository"
 	"course/service"
@@ -12,7 +12,6 @@ import (
 
 	"github.com/gookit/slog"
 	"github.com/joho/godotenv"
-	"github.com/redis/go-redis/v9"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -29,24 +28,26 @@ func main() {
 		slog.Fatalf("Invalid mode: %s. Supported modes are 'dev' and 'prod'.\n", appMode)
 	}
 
-	opts := &redis.ClusterOptions{
-		Addrs: []string{"redis-cluster:6379"},
-	}
+	// init redis cache
+	redisCache := cache.NewRedisCache("redis-cluster:6379")
+	// opts := &redis.ClusterOptions{
+	// 	Addrs: []string{},
+	// }
 
-	rdb := redis.NewClusterClient(opts)
+	// rdb := redis.NewClusterClient(opts)
 
-	ctx := context.Background()
+	// ctx := context.Background()
 
-	err := rdb.Set(ctx, "key", "cal", 0).Err()
-	if err != nil {
-		slog.Error(err)
-	}
+	// err := rdb.Set(ctx, "key", "cal", 0).Err()
+	// if err != nil {
+	// 	slog.Error(err)
+	// }
 
-	val, err := rdb.Get(ctx, "key").Result()
-	if err != nil {
-		panic(err)
-	}
-	slog.Println("key", val)
+	// val, err := rdb.Get(ctx, "key").Result()
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// slog.Println("key", val)
 
 	// init db
 	db := storage.NewDatabase(os.Getenv("POSTGRES_DSN"))
@@ -75,7 +76,7 @@ func main() {
 		slog.Fatal(err)
 	}
 
-	srv, err := api.NewGRPCServer(courseSvc, chapterSvc)
+	srv, err := api.NewGRPCServer(courseSvc, chapterSvc, redisCache)
 	if err != nil {
 		slog.Fatalf("Could not init gRPC Server: %s", err)
 	}

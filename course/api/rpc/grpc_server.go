@@ -2,8 +2,10 @@ package api
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 
+	"course/cache"
 	"course/model"
 	"course/pb"
 	"course/util"
@@ -39,6 +41,7 @@ type grpcServer struct {
 	pb.CourseServiceServer
 	courseSvc  courseService
 	chapterSvc chapterService
+	cache      cache.Cache
 }
 
 func loggingInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
@@ -67,7 +70,7 @@ func newServerMetrics() *grpcprom.ServerMetrics {
 	return srvMetrics
 }
 
-func NewGRPCServer(courseSvc courseService, chapterSvc chapterService) (*grpc.Server, error) {
+func NewGRPCServer(courseSvc courseService, chapterSvc chapterService, cache cache.Cache) (*grpc.Server, error) {
 	slog.Info("Initializing gRPC Server...")
 
 	srvMetrics := newServerMetrics()
@@ -80,6 +83,7 @@ func NewGRPCServer(courseSvc courseService, chapterSvc chapterService) (*grpc.Se
 	pb.RegisterCourseServiceServer(s, &grpcServer{
 		courseSvc:  courseSvc,
 		chapterSvc: chapterSvc,
+		cache:      cache,
 	})
 
 	return s, nil
@@ -117,9 +121,29 @@ func (srv *grpcServer) CreateChapter(_ context.Context, req *pb.CreateChapterReq
 
 // GetChapter implements pb.CourseServiceServer.
 func (srv *grpcServer) GetChapter(_ context.Context, req *pb.ChapterId) (*pb.Chapter, error) {
-	chapter, err := srv.chapterSvc.GetByID(req.Id)
+	chapter := model.Chapter{}
+	jsonVal, err := srv.cache.Get(req.Id)
+
 	if err != nil {
-		return nil, err
+		slog.Error(err)
+
+		chapter, err = srv.chapterSvc.GetByID(req.Id)
+		if err != nil {
+			return nil, err
+		}
+
+		encoded, err := json.Marshal(chapter)
+		if err != nil {
+			slog.Error(err)
+		}
+		srv.cache.Set(chapter.ID, string(encoded), 30)
+		slog.Info("Set data to cache")
+	} else {
+		slog.Info("Taking data from cache")
+		err = json.Unmarshal([]byte(jsonVal), &chapter)
+		if err != nil {
+			slog.Error(err)
+		}
 	}
 
 	return &pb.Chapter{

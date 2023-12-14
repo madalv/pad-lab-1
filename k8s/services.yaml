@@ -57,7 +57,7 @@ spec:
     spec:
       containers:
       - name: course-svc
-        image: madalv/course-svc:1.2.5
+        image: madalv/course-svc:1.2.7
         # imagePullPolicy: Never
         ports:
         - containerPort: 50052
